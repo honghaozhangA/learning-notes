@@ -1,0 +1,84 @@
+Chocolatey测试
+	在命令行工具的下面，输入：
+	 choco help  
+	如果出现一些有用的帮助信息，比如 Chocolatey 的版本号，安装到的目录，相关的命令，还有示例等等，这就说明我们已经可以在系统上使用 Chocolatey 了。
+	直接输入choco 则返回Chocolatey 的版本号
+	 choco  
+Chocolatey用法
+	用 Chocolatey 做的事都是通过在命令行工具里面输入命令去做的，查看这些命令可以在使用 choco help 这个命令，Chocolatey 的命令都是用 choco 开头，后面接着是更具体的子命令，比如 install 就是去安装点什么，update 是去升级指定的包，uninstall 是把包从电脑上删除掉。
+
+	choco help        //查看choco使用说明
+	choco search      //搜索想要安装的包，用 -all 参数会显示所有可用的版本
+	choco install     //安装包，用 -version 参数可以安装指定版本的包
+	choco uninstall   //删除包
+	choco update      //更新安装的包
+
+	搜索
+		在 Chocolatey 的官方网站上（https://chocolatey.org/packages），可以查看所有可以使用 Chocolatey 安装的东西，或者也可以在命令行工具的下面去搜索想要安装的东西：
+		我们直接命令行输入choco search则返回所有的支持的在线的安装包,我测试了一下目前有3974 packages founds
+			choco search 
+			choco search keyword 
+		跟 search 命令功能类似的还有 list 命令：
+			choco list keyword
+		比如搜索一下 nodeJS 相关的包，可以这样：
+			choco search nodeJS 
+		上面的命令会在返回所以跟 nodeJS 相关的包，想要查看这些包所有的可用的版本，可以在命令的后面加上一个 -all 参数：
+			choco search nodeJS -all 
+
+	包的类型
+		* （例：nodejs，git）
+		*.install （例：nodejs.install，git.install）
+		*.commandline（例：nodejs.commandline，未来会被抛弃）
+		*.portable（例：putty.portable）
+		Chocolatey 的包有不同的类型，有些包的名字里面会包含特殊的后缀，比如 .install ，.commandline，.portable ，有些包的名字不带这些后缀。
+		安装带 .install 后缀的包，这个包会出现在系统控制面板里的 卸载或更改程序 里面，你可以把 .install 的包想成是通过安装程序（msi）安装的包。
+		.commandline（未来会被抛弃） 与 .portable 后缀的包是压缩包（zip），安装这种后缀的包，你不能在 卸载或更改程序 里找到它们。
+		你也可以选择不带后缀的包，这样如果系统中已经安装了这个包，就会跳过去，如果没安装，Chocolatey 就会为你安装一个，默认安装的这个包的类型应该就是 .install 后缀的包。
+
+	安装
+		安装包，用的是 choco install 命令，把想要安装的包的名字放到 install 的后面，想一次去安装多个包，可以在 install 命令后面添加一个包的名字的列表，不同的包之间用空格分隔开。
+			choco install package1 package2 package3... 
+		比如我们想去安装一个 cURL 工具，安装之前可以先用 search 命令搜索一下，搜索的时候加上 -all 参数，会显示出包的所有可用的版本，在安装的时候，你可以在 -version 参数的后面，指定一个具体要安装的版本，不使用 -version 参数，直接安装会安装包的最新发布的版本。
+			choco search curl -all 
+		会返回一个列表：
+			...
+			 curl 7.21.7
+			 curl 7.22.0
+			 curl 7.23.1
+			 curl 7.25.0
+			 curl 7.28.1
+			 ... 
+		下面我们故意去安装一个旧版本的 curl ， 一会儿再去升级一下它。比如我要安装的是 7.22.0 版本的 curl ：
+			choco install curl -version 7.22.0 
+			Chocolatey
+		 不仅可以给我们安装指定版本的包，它还能解决包的依赖问题，也就是，如果你安装的这个包需要其它的包提供的功能，Chocolatey 会自动给你安装这个依赖的包。
+		安装以后，可以用 choco list 命令，加上一个 -localonly 或 -lo（简写形式） 参数，查看在本地安装的包的列表。
+			choco list -localonly 
+
+	升级
+		升级安装在本地电脑上的包，用的是 choco upgrade 命令，后面加上要升级的包的名字：
+			choco  upgrade package 
+		在升级包之前，可以先先去查看一下有没有可用的升级。如果你想查看 Chocolatey 本身有没有可用的升级，执行命令：
+			choco versionv 
+		在 choco version 命令的后面，输入具体的包的名字，可以查看指定的这个包有没有可用的新版本。比如查看一下前面我们安装的 cURL 这个小东西的升级：
+			choco version curl 
+		返回的结果看起来是这样的：
+			name       : curl
+			found      : 7.22.0
+			...
+			latest     : 7.28.1
+			... 
+		name 对应的是包的名字，found 后面是安装在本地电脑上的版本，latest 后面是最新的可用的版本。这里 cURL 这个包的最新版本是 7.28.1 ，比我们安装的版本要新，所以可以去升级一下它。
+			choco  upgrade curl 
+		cURL 是一个命令行工具，所以在命令行工具的下面，查看这个小工具的版本可以这样：
+			curl -version 
+		上面命令会返回当前安装在电脑上的 cURL 的版本，你会发现，它已经被 Chocolatey 升级成最新的版本了。
+
+	删除
+		想要删除掉用 Chocolatey 安装的包，用的是 choco uninstall ，后面加上要卸载或者删除掉的包的名字。
+			choco uninstall package 
+		在删除包之前，可以查看一下所有安装在本地的包的列表：
+			choco list -localonly 
+		比如我们要删除掉之前安装的 cURL 这个包：
+			choco uninstall curl 
+		成功以后，再查看一下安装在本地的包的列表，已经看不到 cURL 了。

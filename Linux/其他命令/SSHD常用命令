@@ -1,0 +1,7 @@
+SSHD 常用命令
+
+查看ssh服务是否运行：
+	#ps -ef | grep ssh
+
+sshd已经能够正常工作了,客户端(SecurCRT,putty等)连接不上,尝试关闭防火墙试试：
+	#service iptables stop

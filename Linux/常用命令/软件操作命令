@@ -1,0 +1,8 @@
+软件操作命令 yum
+
+安装软件： yum install xxxx
+卸载软件： yum erase xxx
+搜索软件： yum search xxx
+清空缓存： yum clean packages
+列出已安装： yum list
+软件包信息： yum info xxx

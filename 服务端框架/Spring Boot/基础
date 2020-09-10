@@ -1,0 +1,65 @@
+1. 创建Maven项目
+2. pom导入springboot
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.1.6.RELEASE</version>
+    </parent>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+        </plugins>
+    </build>
+3. 创建主入口 @SpringBootApplication，main方法启动
+4. 创建Controller @RestController，访问方法 @RequestMapping("/kkkk/llll")
+
+------------------------------------------------------
+注解
+Spring Boot：
+    @AutoConfiguration   。
+    @SpringBootApplication  主启动类。
+    @EnableAutoConfiguration    @Import的支持，收集和注册依赖包中相关的bean定义。将所有符合条件的@Configuration配置都加载到当前SpringBoot创建并使用的IOC容器。
+
+Spring：
+    @ConfigurationProperties(prefix="XXX")  自动把配置文件对应类XXX的值装配到类XXX。
+    @Value("${XXX.XXX}")    单个值装配。
+    @Autowired  变量、方法及构造函数自动装配。
+    @Configuration  被注解的类将成为一个bean配置类。
+    @ComponentScan  自动扫描并加载符合条件的组件，比如@Component和@Repository等，最终将这些bean定义加载到spring容器中。
+    @EnableConfigurationProperties(Xxxx.class)  启用配置属性功能，在yml中配置属性
+    @ConditionalXxx 该组件加载入Spring容器的条件
+    @Bean 的scope属性：
+        singleton默认单例；
+        prototype多例；
+        request一次请求；
+        session一个会话；
+        global session映射到porlet的global范围的session。
+
+------------------------------------------------------
+SpringBoot 2.0
+最低Spring5
+最低JDK1.8
+
+------------------------------------------------------
+springboot通过默认配置了很多框架的使用方式帮我们大大简化了项目初始搭建以及开发过程
+工作原理：
+1. 读取spring.factories文件
+    /spring-boot-autoconfigure-2.1.6.RELEASE.jar!/META-INF/spring.factories，读取EnableAutoConfiguration属性的值加载自动配置类。
+2. 加载XxProperties类
+    根据自动配置类中指定的XxxProperties类设置自动装配的属性值，开发者也可以根据XxxProperties类中指定的属性在yml配置文件中修改自动配置（属性默认值）。
+3. 根据@ConditionalXxx注解决定加载哪些组件
+    SpringBoot通过@ConditionalXxx注解指定特定组件加入IOC容器时所具备的特定条件，这个组件会在满足条件时加入IOC容器。
+
+------------------------------------------------------
+打jar包需要添加build依赖（maven-plugin）

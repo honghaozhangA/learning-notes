@@ -1,0 +1,64 @@
+PostgreSql 安装
+
+Tips:
+	在CentOS上，默认的PostgreSQL数据目录是/var/lib/pgsql/版本号/data,
+	PostgreSQL的配置文件就在这个目录下/var/lib/pgsql/版本号/data/postgresql.conf,
+	还有一个配置文件也需要稍加关注，那就是访问控制配置文件/var/lib/pgsql/版本号/data/pg_hba.conf
+
+1. 检查PostgreSQL 是否已经安装：
+	rpm -qa | grep postgres    检查PostgreSQL 是否已经安装
+	rpm -qal | grep postgres   检查PostgreSQL 安装位置
+
+	运行命令 出现 /etc/rc.d/init.d/postgresql-${vsersion}
+
+	卸载 yum remove postgresql*
+
+2.安装Postgresql
+	1.官网： https://www.postgresql.org/download/linux/redhat/ 
+	2.按照官网的步骤即可完成安装！
+		1.添加RPM
+
+		2.安装PostgreSQL version
+			 yum install postgresqlxx-server postgresqlxx-contrib
+
+		3.初始化数据库
+			 /usr/pgsql-9.5/bin/postgresql95-setup initdb
+
+3.设置开机自启
+	systemctl enable postgresql-version.service
+
+4.开启远程访问
+	vim /var/lib/pgsql/{version}/data/postgresql.conf
+    修改 #listen_addresses = 'localhost'  为  listen_addresses='*'
+    当然，此处‘*’也可以改为任何你想开放的服务器IP
+
+5.信任远程连接
+	vim /var/lib/pgsql/{version}/data/pg_hba.conf
+
+	修改如下内容，信任指定服务器连接
+    # IPv4 local connections:
+    host    all            all      127.0.0.1/32      trust
+    host    all            all      {ipaddress}/32（需要连接的服务器IP）  trust
+
+	如果想允许所有IPv4地址，则加入一行host all all 0.0.0.0/0 md5。IPv6方法类似。 
+
+6.PostgreSQL 
+	安装完成后，会建立一下‘postgres’用户，用于执行PostgreSQL，数据库中也会建立一个'postgres'用户，默认密码为自动生成，需要在系统中改一下
+	su - postgres        切换用户
+	执行后提示符会变为 '-bash-4.2$'
+    psql -U postgres       登录数据库
+	执行后提示符变为 'postgres=#'
+    ALTER USER postgres WITH PASSWORD 'postgres';    设置postgres用户密码
+    \q      退出数据库控制台
+	exit     登出用户
+
+7.添加人员
+	CREATE USER 用户名 CREATEDB LOGIN PASSWORD '密码';
+
+8.创建数据库并赋予权限
+	CREATE DATABASE 库名 OWNER 用户;
+	GRANT ALL PRIVILEGES ON DATABASE 库名 to 用户名;
+
+4，防火墙打开端口，以CentOS7为例
+	sudo firewall-cmd --permanent --zone=public --add-port=5432/tcp
+	sudo firewall-cmd --reload

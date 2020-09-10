@@ -1,0 +1,40 @@
+Tomcat 安装
+提示： 必须先配置java 的环境变量
+
+1.进入官网下载相应的版本：https://tomcat.apache.org/download-90.cgi
+2.复制下载链接：http://mirrors.shu.edu.cn/apache/tomcat/tomcat-9/v9.0.11/bin/apache-tomcat-9.0.11.tar.gz
+3.下载文件： wget http://mirrors.shu.edu.cn/apache/tomcat/tomcat-9/v9.0.11/bin/apache-tomcat-9.0.11.tar.gz
+4.解压文件：
+	先创建一个解压目录便于管理： mkdir -p /usr/tomcat
+	再将文件拷贝到创建的文件夹中： cp apache-tomcat-9.0.11.tar.gz /user/tomcat
+	进入/usr/tomcat文件夹中： sudo cd /user/tomcat
+	解压文件： sudo tar -zxvf apache-tomcat-9.0.11.tar.gz
+	删除压缩文件： sudo rm -f apache-tomcat-9.0.11.tar.gz
+5.更改文件的所有者 chown -R xx(用户)：xx(组) 文件/目录
+
+6.进入bin 目录下运行 tomcat: cd bin
+					./startup.sh
+
+		关闭tomcat ./shutdown.sh
+7.添加到环境变量中：
+	sudo vim /etc/profile
+
+	添加
+	export CATALINA_HOME=/usr/tomcat/tomcat_1
+	export PATH=$PATH:$CATALINA_HOME/bin
+
+	source /etc/profile
+
+8.控制台动态输出方式启动
+	#./catalina.sh run
+
+9.查看实时log（log目录）
+	#tail -f catalina.out
+
+10.端口检测：#cat /etc/services |grep 端口
+			#netstat -na | grep 端口
+			#ps 端口
+
+11.tomcat内存设置
+# OS specific support. $var _must_ be set to either true or false.  
+JAVA_OPTS="-server -Xms512M -Xmx1G  -XX:PermSize=128m -XX:MaxPermSize=256m " 

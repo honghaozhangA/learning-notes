@@ -1,0 +1,39 @@
+angular cli 常用命令  (Angular CLI的命令关键字为 ng)
+
+1.通过 Angular CLI 的 help 命令来获取相关的命令信息.
+	ng help
+2.ng version	输出angular-cli版本, node 版本和操作系统信息
+3.ng new <project-name> [options]	在当前目录下创建一个新的项目
+4.ng serve [options]	启动服务
+5.ng doc <keyword>	在浏览器中打开Angular文档并搜索当前关键字
+6.ng generate
+					命令				描述
+	ng generate <type> [options]	在项目中构建新代码
+	ng g <type> [options]	简写
+
+	支持的类型					用法							说明
+	-------------------------------------------------------------------
+	Component	|		ng g component my-new-component		|	组件
+	-------------------------------------------------------------------
+	Directive	|		ng g directive my-new-directive		|	指令
+	-------------------------------------------------------------------
+	Pipe		|		ng g pipe my-new-pipe				|	管道
+	-------------------------------------------------------------------
+	Service		|		ng g service my-new-service			|	服务
+	-------------------------------------------------------------------
+	Class		|		ng g class my-new-class				|	类
+	-------------------------------------------------------------------
+	Interface	|		ng g interface my-new-interface		|	接口
+	-------------------------------------------------------------------
+	Enum		|		ng g enum my-new-enum				|	枚举
+	-------------------------------------------------------------------
+	Module		|		ng g module my-module				|	模块
+	-------------------------------------------------------------------
+	Guard		|		ng g guard my-new-guard				|	守卫
+	-------------------------------------------------------------------
+	
+	创建my-new-component组件:ng g component my-new-component
+	在my-new-component组件下的services文件夹下创建my-new-service:
+	ng g service my-new-component/services/my-new-service
+
+

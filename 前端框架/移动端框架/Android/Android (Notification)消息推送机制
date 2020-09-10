@@ -1,0 +1,153 @@
+Android (Notification)消息推送机制
+
+Notification有哪些功能作用呢
+
+	1)显示接收的短信，消息（QQ，微信，新浪，爱奇艺等）
+
+	2)显示客户端的推送消息
+
+	3)显示正在进行的事务（正在播放的音乐，下载进度条）
+
+	通知状态栏主要涉及到两个类，Notification、NotificationManager
+
+	Notification是通知消息类，它里面对应的通知栏的各种属性
+
+
+
+Notification使用步骤
+
+	<1>.得到通知管理者，因为NotificationManager是一个系统Service,所以需要通过getService得到
+
+		NotificationManager notificationManager= (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+	<2>.创建Notification
+
+		NotificationCompat.Builder builder=new NotificationCompat.Builder(this);
+
+	<3>.为Notification设置各种属性
+
+	<4>.通过通知管理者NotificationManager发送通知
+
+		notificationManager.notify(0x101,notification);
+
+	<5>.删除通知
+
+		notificationManager.cancel(NOTIFICATION_ID);
+
+完整的代码
+	1.创建对应的service
+		class TaskManageNotificationService extends Service {
+			    // 获取消息线程
+			    private MessageThread messageThread = null;
+
+			    // 点击查看
+			    private Intent messageIntent = null;
+			    private PendingIntent messagePendingIntent = null;
+
+			    // 通知栏消息
+			    private int messageNotificationID = 1000;
+			   // private Notification messageNotification = null;
+			    private NotificationManager messageNotificationManager = null;
+			    //实例化通知
+			    private NotificationCompat.Builder builder = null;
+
+			    public TaskManageNotificationService() {
+
+			    }
+
+			    @Override
+			    public IBinder onBind(Intent intent) {
+			        return null;
+			    }
+
+			    @Override
+			    public int onStartCommand(Intent intent, int flags, int startId) {
+
+			        //实例化通知管理器
+			        messageNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+
+
+			        messageIntent = new Intent(this, MainActivity.class);
+			        messagePendingIntent = PendingIntent.getActivity(this, 0,
+			                messageIntent, 0);
+
+			        // 开启线程
+			        messageThread = new MessageThread();
+			        messageThread.isRunning = true;
+			        messageThread.start();
+
+			        return super.onStartCommand(intent, flags, startId);
+			    }
+
+
+			    /**
+			     * 从服务器端获取消息
+			     *
+			     */
+			    class MessageThread extends Thread {
+			        // 设置是否循环推送
+			        public boolean isRunning = true;
+
+			        public void run() {
+			             while (isRunning) {
+			                try {
+			                    // 间隔时间
+			                    Thread.sleep(1000);
+			                    // 获取服务器消息
+			                    String serverMessage = getServerMessage();
+			                    if (serverMessage != null && !"".equals(serverMessage)) {
+			                     	//实例化通知
+							        builder = new NotificationCompat.Builder(this);
+							        builder.setContentTitle("新任务");//设置通知标题
+							        builder.setContentText("不要放孔明灯，容易起火");//设置通知内容
+							        builder.setDefaults(NotificationCompat.DEFAULT_ALL);//设置通知的方式，震动、LED灯、音乐等
+							        builder.setAutoCancel(true);//点击通知后，状态栏自动删除通知
+							        builder.setSmallIcon(R.drawable.court_easyicon_9);//设置小图标
+			                        // 更新通知栏 设置通知内容
+			                        builder.setContentText(serverMessage);
+			                        //设置点击通知后将要启动的程序组件对应的PendingIntent
+			                        builder.setContentIntent(messagePendingIntent);
+			                        messageNotificationManager.notify(messageNotificationID,
+			                                builder.build());
+			                        // 每次通知完，通知ID递增一下，避免消息覆盖掉
+			                        messageNotificationID++;
+			                    }
+			                } catch (InterruptedException e) {
+			                    e.printStackTrace();
+			                }
+			             }
+			        }
+			    }
+
+			    @Override
+			    public void onDestroy() {
+			        // System.exit(0);
+			        messageThread.isRunning = false;
+			        super.onDestroy();
+			    }
+
+			    /**
+			     * 模拟发送消息
+			     *
+			     * @return 返回服务器要推送的消息，否则如果为空的话，不推送
+			     */
+			    public String getServerMessage() {
+			        return "NEWS!";
+			    }
+		}
+
+	2.在mainfeast.xml文件中配置Service
+		<service  android:name=".services.TaskManageNotificationService">
+            <intent-filter>
+                <action android:name="task_manage_notification"/>
+            </intent-filter>
+        </service>
+    3.如何使用创建的service
+    	1). 启动service
+	    	Intent intent = new Intent();
+	        intent.setAction("task_manage_notification");
+	        startService(intent);
+        2). 停止service
+        	Intent intent = new Intent();
+            intent.setAction("task_manage_notification");
+            stopService(intent);

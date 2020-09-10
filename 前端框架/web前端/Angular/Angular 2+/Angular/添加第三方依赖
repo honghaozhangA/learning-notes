@@ -1,0 +1,19 @@
+添加第三方依赖
+
+1.npm install name –save
+
+	我们可以通过npm install name –save这个命令去添加依赖。注意，要在项目的根目录下执行该命令。 
+	例如 npm install jquery –save
+
+	–save 就是将要安装的依赖写到package.json的dependencies 对象中去 
+	–save-dev是将要安装的依赖写到package.json的devDependencies 对象中去
+
+2.安装类型描述文件 
+	通过命令：npm install @types/name –save-dev
+
+	安装jQuery依赖是注意：
+	这个时候我们还不能直接使用jquery，因为Angular是使用TypeScript语言开发的，而jquery本质是javascript，TypeScript是不能直接使用的。我们需要先安装类型描述文件，让TypeScript认识jquery。
+	这里演示的是jquery的类型描述文件的安装：npm install @types/jquery –save-dev 
+	类型描述文件安装到开发环境即可
+	安装完成后，修改tsconfig.app.json文件，将jquery添加到types数组中。
+

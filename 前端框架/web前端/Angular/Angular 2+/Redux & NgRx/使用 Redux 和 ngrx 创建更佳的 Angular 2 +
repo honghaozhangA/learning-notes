@@ -1,0 +1,767 @@
+使用 Redux 和 ngrx 创建更佳的 Angular 2 +
+
+Angular 状态管理的演进
+如果应用使用单个的控制器管理所有的状态，Angular 中的状态管理将从单个有机的单元开始。如果是一个单页应用，一个控制器还有意义吗？我们从冰河世纪挣脱出来，开始将视图、控制器，甚至指令和路由拆分为更小的独立的单位。这是巨大的改进，但是对于复杂的应用来说，管理复杂的状态仍然是一个问题。对于我们来说，在控制器，服务，路由，指令和偶尔的模板中包含散步的状态是很常见的。可变的状态本身不是邪恶的，但是共享的可变状态则是灾难的入场券。
+
+
+
+正如像 Angular 这样的现代 Web 框架永远地改变了我们以 jQuer 为中心的应用开发方式，React 从根本上改变了我们在使用现代 Web 框架时处理状态管理的方式。Redux 是这种改变的前沿和核心，因为它引入了一种优雅地，但是非常简单的方式来管理应用程序状态。值得一提的是，Redux 不仅是一个库，更重要的是它是一种设计模式，完全与框架无关，更巧的是可以与 Angular 完美合作。
+
+整个文章的灵感来自  Egghead.io – Getting Started with Redux series by Dan Abramov. 除了创始人的说明没有更好的途径学习 Redux。它完全免费并且改变了我的编程方式。
+
+redux 的美妙之处在于它可以使用简单的句子表达出来，总之，在我 “啊” 的时候就可以总结三个要点。
+
+单个的状态树
+
+
+
+redux 的基础前提是应用的整个状态可以表示为单个的被称为 store 的 JavaScript 对象，或者 application store, 它可以被特定的被称为 reducers 的函数操作。同样重要的是状态是不变的，应用中只有 reducers 可以改变它。如上图所示，store 是整个应用世界的中心.
+
+状态的稳固和不变使得理解和预测应用的行为变得指数级的容易。
+
+事件流向上
+
+
+
+在 redux 中，用户的事件被捕获然后发布到 reducer 处理。在 Angular 1.x 中，经常见到的反模式用法就是带有大堆的管理本地逻辑的庞大的控制器。通过将处理逻辑转移到 reducer，组件的负担将会变得很轻微。在 angular 2 中，你经常看到除了捕获事件并通过 output 发射出去的哑的控制器。
+
+如上图所示，你会看到两个事件流。一个事件从子组件发射到父组件，然后到达 reducer。第二个事件流发射到 service 来执行一个异步操作，然后结果再发射到 reducer 。所有的事件流最终都到达 reducer 。
+
+状态流向下
+
+
+
+事件流向上的时候，状态流从父组件流向子组件。Angular 2 通过定义 Input 是的从父组件向子组件传递状态变得很简单。这对 change detection 有着深刻的含义，我们将稍后介绍。
+
+@ngrx/store
+
+
+
+通过引入 Observable 和 async 管道，Angular 2 的状态管理变得非常简单。我的朋友  Rob Wormald 使用 RxJS 创建了被称为  @ngrx/store 的Redux 实现。 这给予我们组合了 redux 和 Observable 的强大力量，这是非常强大的技术栈。
+
+示例应用
+
+
+
+ 我们将创建一个简单的主-从页面的 REST 应用，它有一个列表，我们可以选择并编辑摸个项目，或者添加新项目。使用它来演示 @ngrx/store 进行异步操作，我们将使用 json-server 来提供 REST API , 使用 Angular 2 的 http 服务进行访问。如果你希望一个更简单的版本，可以获取 simple-data-flow 分支来跳过 HTTP 调用部分。
+
+获取代码，让我们开始吧。
+
+ Code
+
+ 打好基础
+我们将在本文中涉及很多方面，所以我们尽量提供详细的步骤。总是需要一个建立概念的阶段，在开始之前需要一些基础。在本节中，我们将创建一个基础的 Angular 应用，为我们在应用程序的上下文中讨论 redux 和 ngrx 创建一个基础空间。不需要太多的关注细节，我们将不止一次地重新回顾所有的内容，以便强化我们所涵盖的想法。
+
+Reducers Take One
+
+为了便于我们的主-从接口，我们需要管理一个项目的数组和当前选中的项目。我们将使用 @ngrx/store 提供的 store, 存储状态。
+
+管理应用的状态，我们需要创建我们 items 和 selectedItem 的 reducers. 典型的 reducer 是一个接收一个状态对象和操作的函数。我们的 ngrx reducer 有一点不同在于第二个参数是一个对象，带有一个操作类型的 type 属性和对应数据的 payload 属性。我们还可以提供一个默认值来保证顺畅地初始化。
+
+复制代码
+复制代码
+// The "items" reducer performs actions on our list of items
+export const items = (state: any = [], {type, payload}) => {
+  switch (type) {
+    default:
+      return state;
+  }
+};
+复制代码
+复制代码
+ 
+
+我们会创建处理特定操作的 reducer ，但是现在，我们仅仅使用 switch 的 default 来返回 state. 上面的代码片段和下面的仅仅区别在于一个用于 items ，一个用于 selectedItem。分别看它们便于查看底层的处理模式。
+
+复制代码
+复制代码
+// The "selectedItem" reducer handles the currently selected item
+export const selectedItem = (state: any = null, {type, payload}) => {
+  switch (type) {
+    default:
+      return state;
+  }
+};
+复制代码
+复制代码
+ 
+
+创建一个应用存储的接口的确可以便于理解 reducers 是如何用于应用的。在我们的 AppStroe 接口中，可以看到，单个对象中有一个 items 集合和一个持有单个 Item 的 selectedItem 属性。
+
+export interface AppStore {
+  items: Item[];
+  selectedItem: Item;
+}
+ 
+
+如果你需要额外的功能，存储可以扩展新的键值对来容纳更新的模型。
+
+注入存储
+
+现在我们定义了 reducers，我们需要将它们添加到应用存储中，然后注入应用。第一步是将 items，selectedItem 和 provideStore 导入应用。provideStore 提供给我们一个应用存储在应用的生命周期中使用。
+
+我们通过调用 provideStore 来初始化我们的存储，传递我们的 items 和 selectedItem 的 reducers. 注意我们需要传递一个适配我们 AppStore 接口的对象。
+
+然后我们通过定义它作为一个应用的依赖项来使得存储对于整个应用有效，在我们调用 bootstrap 初始化应用的时候我们完成它。
+
+复制代码
+复制代码
+import {bootstrap} from 'angular2/platform/browser';
+import {App} from './src/app';
+import {provideStore} from '@ngrx/store';
+import {ItemsService, items, selectedItem} from './src/items';
+bootstrap(App, [
+  ItemsService, // The actions that consume our store
+  provideStore({items, selectedItem}) // The store that defines our app state
+])
+.catch(err => console.error(err));
+复制代码
+复制代码
+ 
+
+你可能还注意到了我们也导入并注入了 ItemsService ，我们下一步就定义它，它是我们新存储的主要消费者。
+
+创建 Items 服务
+
+我们第一个简单的迭代是从存储中拉取 items 集合。我们将 items 集合类型化为包含 item 数组的 Observable 对象。将数组包装为一个 Observable 对象的好处是一旦在应用中使用这个集合就会更清晰。我们也将会注入我们的存储，使用我们前面定义的强类型接口 AppStore 。
+
+复制代码
+复制代码
+@Injectable()
+export class ItemsService {
+  items: Observable<Array<Item>>;
+  constructor(private store: Store<AppStore>) {
+    this.items = store.select('items'); // Bind an observable of our items to "ItemsService"
+  }
+}
+复制代码
+复制代码
+ 
+
+因为我们使用键-值存储，我们可以通过调用 store.select('items') 来获取集合并赋予 this.items 。select 方法返回一个含有我们集合的 Observable 对象。
+
+要点！创建一个服务来从存储中获取 items 数据的原因是我们将在访问远程 API 的时候引入异步操作。这层抽象使我们在处理任何 reducer 处理之前可以容纳一些潜在的复杂异步问题。
+
+消费 Items
+
+现在我们创建了 items 服务，items 集合也已经可用，我们要在 App 组件中使用它了。类似 items，我们将 items 定义为 Observable<Array<Item>>，我们将 selectedItem 也定义为含有单个 Item 的 Observable 对象。
+
+复制代码
+复制代码
+export class App {
+  items: Observable<Array<Item>>;
+  selectedItem: Observable<Item>;
+  constructor(private itemsService: ItemsService, private store: Store<AppStore>) {
+    this.items = itemsService.items; // Bind to the "items" observable on the "ItemsService"
+    this.selectedItem = store.select('selectedItem'); // Bind the "selectedItem" observable from the store
+  }
+}
+复制代码
+复制代码
+ 
+
+我们从 ItemsService 获取 items 并赋予 this.items，对于 selectedItem，我们直接从我们的存储中调用 store.select('selectedItem') 来获取，如果你记得，我们创建了 ItemsService 来抽象异步操作。管理 selectedItem 本质上是同步的，所以我没有同样创建 SelectedItemService 。这是我使用 ItemsService 处理 items ，但是直接使用存储来处理  selectedItem 的原因。你完全有理由自己创建一个服务来同样处理。
+
+显示项目
+
+Angular 2 设计成使用小的特定组件来聚合组件。我们的的应用有两个组件称为：ItemsList  和 ItemDetail 分别表示所有项目的列表和当前选中的项目。
+
+复制代码
+复制代码
+@Component({
+  selector: 'my-app',
+  providers: [],
+  template: HTML_TEMPLATE,
+  directives: [ItemList, ItemDetail],
+  changeDetection: ChangeDetectionStrategy.OnPush
+})
+复制代码
+复制代码
+ 
+
+我的语法高亮器不够好，所以我将它分为两个部分，实践中，我建议保持你的组件足够细粒度便于使用内嵌模板，太大的模板意味着你的组件做得太多了。
+
+在 my-app 模板中，我们使用 items-list 组件的属性绑定将本地的 items 集合传递给 items-list 的 items. 这类似 Angular 1 中的隔离作用域，我们创建带有 input 类型的 items 属性的子组件，然后，将父组件中的 items 集合的值绑定到这个属性。因为我们在使用 Observable，所以可以使用 asyn 管道来直接赋值而不用抽取具体的值。需要指出的是在 Angular 1 中，我们需要调用服务，当 Promise 完成之后，我们要获取值并赋予一个绑定到的属性。在 Angular 2 中，我们可以直接将异步对象应用在模板中。
+
+复制代码
+<div>
+  <items-list [items]="items | async"></items-list>
+</div>
+<div>
+  <item-detail [item]="selectedItem | async"></item-detail>
+</div>
+复制代码
+ 
+
+使用同样的模式，我将 selectedItem 使用 item-detail 组件处理。现在我们已经构建了应用的基础，我们现在可以深入 redux 应用的三个主要特性了。
+
+中心化状态
+
+
+重申一下，redux 最重要的概念就是整个应用的状态中心化为单个的 JavaScript 对象树。在我看来，最大的改变是从我们以前的 Angualr 应用方式转换到现在的方式。我们通过一个获取原始状态和操作的 reducer 函数来管理状态，通过执行一系列基于 Action 的逻辑操作并返回新的状态对象。我们将创建子组件来显示 items 和 selectedItem ，并留意它们被主组件，单个状态树填充的事实。
+
+我们的 reducer 需要的仅仅是改变应用状态，我们从 selectedItem 的 reducer 开始，因为它是两个中最简单的那个。当存储发布一个类型为 SELECT_ITEM 的操作事件后，将会命中 switch 中的第一个选择，然后返回 payload 作为新的状态。简单地说，我们告诉 recuder ： “拿到新的项目并作为当前选中的项目”, 同时，Action 是自定义的字符串使用全部大写，经常定义为应用中的常量。
+
+复制代码
+复制代码
+export const selectedItem = (state: any = null, {type, payload}) => {
+  switch (type) {
+    case 'SELECT_ITEM':
+      return payload;
+    default:
+      return state;
+  }
+};
+复制代码
+复制代码
+ 
+
+由于我们的状态对象是只读的。对于每个操作的响应都是一个新的对象，上一个对象则没有变化。在实现 redux 的时候在 reducer 中强制不变性是关键点，我们将逐步讨论每个操作和如何实现。
+
+复制代码
+复制代码
+export const items = (state: any = [], {type, payload}) => {
+  switch (type) {
+    case 'ADD_ITEMS':
+      return payload;
+    case 'CREATE_ITEM':
+      return [...state, payload];
+    case 'UPDATE_ITEM':
+      return state.map(item => {
+        return item.id === payload.id ? Object.assign({}, item, payload) : item;
+      });
+    case 'DELETE_ITEM':
+      return state.filter(item => {
+        return item.id !== payload.id;
+      });
+    default:
+      return state;
+  }
+};
+复制代码
+复制代码
+ 
+
+ADD_ITEMS 作为新的数组返回我们传递的内容
+CREATE_ITEM  返回包含了新项目的全部项目
+UPDATE_ITEM  返回新数组，通过映射使用 Object.assign 克隆一个新对象。
+DELETE_ITEM  返回过滤掉希望删除项目的新数组。
+通过中心化我们的状态到单个的状态树，将操作状态的代码分组到 reducer 中是的我们的应用易于理解。另外的好处是将 reducer 中的业务逻辑分离到纯粹的单元中，这使得测试应用变得容易。
+
+状态下降
+
+先预览数据流是如何连接的，我们看一下 ItemsService，看看如何在 items 的 reducer 中初始化一个操作。最终我们将会替换 loadItems 方法是用 HTTP 调用，但是现在，我们假定硬编码一些数据，使用它初始化数组。执行一个操作，我们调用 this.store.dispatch 并传递一个类型为 ADD_ITEMS 和初始化数据的 action 对象。
+
+复制代码
+复制代码
+@Injectable()
+export class ItemsService {
+  items:Observable <Array<Item>>;
+  constructor(private store:Store<AppStore>) {
+    this.items = store.select('items');
+  }
+  loadItems() {
+    let initialItems:Item[] = [
+      // ITEM OBJECTS HERE
+    ];
+    this.store.dispatch({type: 'ADD_ITEMS', payload: initialItems});
+  }
+}
+复制代码
+复制代码
+ 
+
+有趣的是每当我们派发 ADD_ITEMS 事件，我们本地的 items 集合就会相应自动更新，因为它通过 observable 实现。因为我们在 App 组件中消费 items，它也同样自动更新。并且如果我们传递这个集合给 ItemsList 组件，它也同样更新子组件。
+
+Redux 是非常棒的设计模式，它基于不变数据结构。加入了 Obserable 之后，你拥有了超级便利的方式通过绑定到 Observable 的流对象将状态下发到应用。
+
+状态向下
+
+
+
+另一个 Redux 的基石是状态流总是向下。为解释这一点，我们从 App 组件开始然后将 items 和 selectedItem 数据向下传递到子组件。我们从 ItemsService 填充 items 数据 ( 因为最终是异步操作 ) 并直接从 store 中拉取 selectedItem 数据。
+
+复制代码
+复制代码
+export class App {
+  items: Observable<Array<Item>>;
+  selectedItem: Observable<Item>;
+  constructor(private itemsService: ItemsService, private store: Store<AppStore>) {
+    this.items = itemsService.items;
+    this.selectedItem = store.select('selectedItem');
+    this.selectedItem.subscribe(v => console.log(v));
+    itemsService.loadItems(); // "itemsService.loadItems" dispatches the "ADD_ITEMS" event to our store,
+  }                           // which in turn updates the "items" collection
+}
+复制代码
+复制代码
+ 
+
+这里是应用中仅有的设置两个属性的地方。一会我们将学习一些如何本地修改数据的手法，但是我们再也不会直接这样做的。概念上说，这对我们以前的方式是巨大的转变，更意味着，如果我们不在组件中直接修改数据，意味着我们不再需要 change detection.
+
+App 组件获取 items 和 selectedItem，然后通过属性绑定传递给子组件。
+
+复制代码
+<div>
+  <items-list [items]="items | async"></items-list>
+</div>
+<div>
+  <item-detail [item]="selectedItem | async"></item-detail>
+</div>
+复制代码
+ 
+
+在 ItemsList 组件中，我们通过 @Input() 来取得 items 集合
+
+复制代码
+复制代码
+@Component({
+  selector: 'items-list',
+  template: HTML_TEMPLATE
+})
+class ItemList {
+  @Input() items: Item[];
+}
+复制代码
+复制代码
+ 
+
+在 HTML 模板中，我们使用 ngFor 来遍历 items 并显示每一项。
+
+复制代码
+复制代码
+<div *ngFor="#item of items">
+<div>
+<h2>{{item.name}}</h2>
+</div>
+<div>
+    {{item.description}}
+  </div>
+</div>
+复制代码
+复制代码
+ 
+
+在 ItemDetail 组件中稍微复杂一点，因为我们需要用户创建新的项目或者编辑现有的项目。你会有一些我学习 redux 中的问题。你如何修改一个现有的项目而不改变它？我们将创建一个处理项目的本地复制品，这样就不会修改我们选中的项目。额外的好处就是我们可以直接取消修改而不会有边界影响。
+
+为做到这一点，我们修改一点我们的 item 输入参数到一个本地作用域的 _item 属性，使用 @Input('item') _item: Item；基于 ES6 的强大，我们可以为 _item 创建一个赋值器 ，处理对象更新的额外逻辑。这里，我们使用 Object.assign 来创建 _item 的复制品，将它赋予 this.selectedItem，我们将它绑定到表单中。我们也创建一个属性，并存储源项目的名字以便用户无视他们当前工作在什么之上。这出于严格的用户体验的动机，但这些小事带来很大的不同。
+
+复制代码
+复制代码
+@Component({
+  selector: 'item-detail',
+  template: HTML_TEMPLATE
+})
+class ItemDetail {
+  @Input('item') _item: Item;
+  originalName: string;
+  selectedItem: Item;
+  // Every time the "item" input is changed, we copy it locally (and keep the original name to display)
+  set _item(value: Item){
+    if (value) this.originalName = value.name;
+    this.selectedItem = Object.assign({}, value);
+  }
+}
+复制代码
+复制代码
+ 
+
+在模板中，基于是现有的对象还是新的对象我们使用 ngIf 检查 selectedItem.id 来切换标题。我们有两个输入项使用 ngModel 和双向绑定语法分别绑定到 selectedItem.name 和 selectedItem.description。
+
+复制代码
+复制代码
+<div>
+<div>
+<h2 *ngIf="selectedItem.id">Editing {{originalName}}</h2>
+<h2 *ngIf="!selectedItem.id">Create New Item</h2>
+</div>
+<div>
+<form novalidate>
+<div>
+        <label>Item Name</label>
+        <input [(ngModel)]="selectedItem.name"
+               placeholder="Enter a name" type="text">
+      </div>
+<div>
+        <label>Item Description</label>
+        <input [(ngModel)]="selectedItem.description"
+               placeholder="Enter a description" type="text">
+      </div>
+</form>
+</div>
+</div>
+复制代码
+复制代码
+ 
+
+就是这样了，这就是基础的获取数据并传递给子组件显示的方式。
+
+事件向上
+
+
+状态向下的对立面就是事件向上。用户的交互将触发事件最终被 reducer 处理。有趣的是组件突然变得非常轻量，很多时候是哑的没有任何逻辑存在。从技术上讲，我们可以在子组件中派发一个 reducer 事件，但是，我们会委托给父组件来最小化组件依赖。
+
+我们看看没有模板的 ItemsList 组件来看看我说什么，我们有单个的用于 items 的 Input 参数，我们 Output 两个事件当项目被选中或删除的时候，这是整个的 ItemsList 类定义。
+
+复制代码
+复制代码
+@Component({
+  selector: 'items-list',
+  template: HTML_TEMPLATE
+})
+class ItemList {
+  @Input() items: Item[];
+  @Output() selected = new EventEmitter();
+  @Output() deleted = new EventEmitter();
+}
+复制代码
+复制代码
+ 
+
+在模板中，我们调用 selected.emit(item) 当项目被点击的时候，当删除按钮点击的时候，调用 deleted.emit(item)。删除按钮点击的时候，我们也调用了 $event.stopPropagation() 来保证不会触发选中的事件处理器。
+
+复制代码
+复制代码
+<div *ngFor="#item of items" (click)="selected.emit(item)">
+<div>
+<h2>{{item.name}}</h2>
+</div>
+<div>
+    {{item.description}}
+  </div>
+<div>
+    <button (click)="deleted.emit(item); $event.stopPropagation();">
+      <i class="material-icons">close</i>
+    </button>
+  </div>
+</div>
+复制代码
+复制代码
+ 
+
+通过定义 selected 和 deleted 作为组件输出，我们可以在父组件中使用同样的类似 Dom  事件的方式进行捕获，我们的可以见到如 (selected)="selectedItem($event)" 和 (deleted)="deleted($event)"。$event 并不包含鼠标信息，而是我们分发的数据。
+
+复制代码
+<div>
+  <items-list [items]="items | async"
+    (selected)="selectItem($event)" 
+    (deleted)="deleteItem($event)">
+  </items-list>
+</div>
+复制代码
+ 
+
+当这些事件触发之后，我们在父组件捕获并处理。选中项目的时候，我们派发一个类型为 SELECT_ITEM ，payload 为选中项目的事件。当删除项目的时候，我们仅仅将处理委托到 ItemsService 处理。
+
+复制代码
+复制代码
+export class App {
+  //...
+  selectItem(item: Item) {
+    this.store.dispatch({type: 'SELECT_ITEM', payload: item});
+  }
+  deleteItem(item: Item) {
+    this.itemsService.deleteItem(item);
+  }
+}
+复制代码
+复制代码
+ 
+
+现在，我们在 ItemsService 中派发 DELETE_ITEM 事件到 reducer ，一会我们使用 HTTP 调用来替换它。
+
+复制代码
+复制代码
+@Injectable()
+export class ItemsService {
+  items: Observable<Array<Item>>;
+  constructor(private store: Store<AppStore>) {
+    this.items = store.select('items');
+  }
+  //...
+  deleteItem(item: Item) {
+    this.store.dispatch({ type: 'DELETE_ITEM', payload: item });
+  }
+}
+复制代码
+复制代码
+ 
+
+为强化我们所学的，我们也在 ItemDetails 组件中应用事件向上。我们希望允许用户保存或者取消操作，所以我们定义两个输出事件：saved 和 cancelled.
+
+复制代码
+class ItemDetail {
+  //...
+  @Output() saved = new EventEmitter();
+  @Output() cancelled = new EventEmitter();
+}
+复制代码
+ 
+
+在我们表单的按钮中，cancel 按钮调用 cancelled.emit(selectedItem)，save 按钮点击时调用 saved.emit(selectedItem)
+
+复制代码
+复制代码
+<div>
+  <!-- ... --->
+<div>
+      <button type="button" (click)="cancelled.emit(selectedItem)">Cancel</button>
+      <button type="submit" (click)="saved.emit(selectedItem)">Save</button>
+  </div>
+</div>
+复制代码
+复制代码
+ 
+
+在主组件中，我们绑定 saved 和 canceled 输出事件到类中的事件处理器上。
+
+复制代码
+复制代码
+<div>
+  <items-list [items]="items | async"
+    (selected)="selectItem($event)" 
+    (deleted)="deleteItem($event)">
+  </items-list>
+</div>
+<div>
+  <item-detail [item]="selectedItem | async"
+    (saved)="saveItem($event)" 
+    (cancelled)="resetItem($event)">
+    </item-detail>
+</div>
+复制代码
+复制代码
+ 
+
+当用户点击取消按钮，我们创建一个新的项目，派发一个 SELECT_ITEM 事件。当保存按钮点击的时候，我们调用 ItemsService 的 saveItem 方法，然后重置表单。
+
+复制代码
+复制代码
+export class App {
+  //...
+  resetItem() {
+    let emptyItem: Item = {id: null, name: '', description: ''};
+    this.store.dispatch({type: 'SELECT_ITEM', payload: emptyItem});
+  }
+  saveItem(item: Item) {
+    this.itemsService.saveItem(item);
+    this.resetItem();
+  }
+}
+复制代码
+复制代码
+ 
+
+起初，我纠结于一个表单创建项目，另一个表单编辑项目。这看起来有点重，所以我选择了共享表单，因为两个表单都可以保存项目。然后我通过检查 item.id 是否存在来分别调用 createItem 和 updateItem，这两个方法都接收我们发送的项目，并使用适当的事件派发它。现在，我希望我们如何将对象传递给 reducer 进行处理的模式开始出现了。
+
+复制代码
+复制代码
+@Injectable()
+export class ItemsService {
+  items: Observable<Array<Item>>;
+  constructor(private store: Store<AppStore>) {
+    this.items = store.select('items');
+  }
+  //...
+  saveItem(item: Item) {
+    (item.id) ? this.updateItem(item) : this.createItem(item);
+  }
+  createItem(item: Item) {
+    this.store.dispatch({ type: 'CREATE_ITEM', payload: this.addUUID(item) });
+  }
+  updateItem(item: Item) {
+    this.store.dispatch({ type: 'UPDATE_ITEM', payload: item });
+  }
+  //...
+  // NOTE: Utility functions to simulate server generated IDs
+  private addUUID(item: Item): Item {
+    return Object.assign({}, item, {id: this.generateUUID()}); // Avoiding state mutation FTW!
+  }
+  private generateUUID(): string {
+    return ('' + 1e7 + -1e3 + -4e3 + -8e3 + -1e11)
+      .replace(/1|0/g, function() {
+        return (0 | Math.random() * 16).toString(16);
+      });
+  };
+}
+复制代码
+复制代码
+ 
+
+我们刚刚完成了状态向下，事件向上的循环，但是我们仍然生活在真空中，与真正的服务器通讯难吗？答案是一点都不难。
+
+调用服务器
+首先，需要在应用中为 HTTP 调用做点准备，我们要从 @angular/http 导入 Http 和 Headers 。
+
+import {Http, Headers} from 'angular2/http';
+ 
+
+我们将定义 BASE_URL 常量以便我们仅仅需要输入一次，我们还要创建 HEADER 常量来告诉服务器我们如何与其通讯。基于你的服务器这不是必须的，但是 json-server 需要，我不得不加上它。
+
+const BASE_URL = 'http://localhost:3000/items/';
+const HEADER = { headers: new Headers({ 'Content-Type': 'application/json' }) };
+ 
+
+我们在 ItemsService 中注入 Http，并使用局部成员 http 来访问。
+
+constructor(private http: Http, private store: Store<AppStore>) {
+  this.items = store.select('items');
+}
+ 
+
+现在，我们修改现有的 CRUD 方法来处理远程服务器访问，从 loadItems 开始，我们调用 this.http.get(BASE_URL) 来获取远程的项目，由于 http 返回一个 Observable 对象，我们可以使用额外的操作符来管道化返回结果。我们调用 map 来解析返回结果，再调用 map 将结果创建为一个希望派发给 reducer的对象，最终我们 subscribe 返回的 Observable 将结果传递给 reducer 进行派发。
+
+复制代码
+复制代码
+loadItems() {
+  // Retrieves the items collection, parses the JSON, creates an event with the JSON as a payload,
+  // and dispatches that event
+  this.http.get(BASE_URL)
+    .map(res => res.json())
+    .map(payload => ({ type: 'ADD_ITEMS', payload }))
+    .subscribe(action => this.store.dispatch(action));
+}
+复制代码
+复制代码
+ 
+
+在更新 createItem 方法的时候使用类似的模式。仅有的区别是调用 http.post 使用格式化的 item数据和我们的 HEADER 常量。一旦处理完成，我们可以在 subscribe 方法中进行派发。
+
+复制代码
+createItem(item: Item) {
+  this.http.post(BASE_URL, JSON.stringify(item), HEADER)
+    .map(res => res.json())
+    .map(payload => ({ type: 'CREATE_ITEM', payload }))
+    .subscribe(action => this.store.dispatch(action));
+}
+复制代码
+ 
+
+更新和删除更简单一点，我们不依赖服务器返回的数据。我们仅仅关心是否成功。所以，我们使用 http.put 和 http.delete 并整个跳过了 map 处理。我们可以从 subscribe 块中派发 reducer 事件。
+
+复制代码
+复制代码
+updateItem(item: Item) {
+  this.http.put(`${BASE_URL}${item.id}`, JSON.stringify(item), HEADER)
+    .subscribe(action => this.store.dispatch({ type: 'UPDATE_ITEM', payload: item }));
+}
+deleteItem(item: Item) {
+  this.http.delete(`${BASE_URL}${item.id}`)
+    .subscribe(action => this.store.dispatch({ type: 'DELETE_ITEM', payload: item }));
+}
+复制代码
+复制代码
+ 
+
+奖项：测试
+Redux 一个重要的方面是易于测试，这是由于它们是一个带有简单约定的纯函数。对于我们的应用，可以测试的内容已经大大减少，在我写的时候并不像让它有趣，但它确实是。
+
+设置
+
+我不想深入介绍测试，但是我们快速看一下测试用例。第一件事是导入 items 和 selectedItems 以及从 @angular/testing 中导入 it，describe, expect 。等一下，这不是 Jasmine 方法吗？是的，Angular 默认使用 Jasmine 测试。
+
+复制代码
+import {items, selectedItem} from './items';
+import {
+  it,
+  describe,
+  expect
+} from 'angular2/testing';
+复制代码
+ 
+
+测试框架看起来如下：
+
+复制代码
+复制代码
+describe('Items', () => {
+  describe('selectedItem store', () => {
+    it('returns null by default', () => {});
+    it('SELECT_ITEM returns the provided payload', () => {});
+  });
+  describe('items store', () => {
+    let initialState = [
+      { id: 0, name: 'First Item' },
+      { id: 1, name: 'Second Item' }
+    ];
+    it('returns an empty array by default', () => {});
+    it('ADD_ITEMS', () => {});
+    it('CREATE_ITEM', () => {});
+    it('UPDATE_ITEM', () => {});
+    it('DELETE_ITEM', () => {});
+  });
+});
+复制代码
+复制代码
+ 
+
+测试很容易写，因为我们当我们发送操作给 reducer 的时候从初始状态开始。我们清楚应该返回什么。我们知道如果我们发送 ADD_ITEMS 操作，我们会得到什么，可以看到如下断言。
+
+复制代码
+it('ADD_ITEMS', () => {
+  let payload = initialState,
+      stateItems = items([], {type: 'ADD_ITEMS', payload: payload}); // Don't forget to include an initial state
+expect(stateItems).toEqual(payload);
+});
+复制代码
+ 
+
+如果我们使用 CREATE_ITEM 调用 reducer, 我们期望返回的结果就是初始数组加上新项。
+
+复制代码
+it('CREATE_ITEM', () => {
+  let payload = {id: 2, name: 'added item'},
+      result = [...initialState, payload],
+      stateItems = items(initialState, {type: 'CREATE_ITEM', payload: payload});
+expect(stateItems).toEqual(result);
+});
+复制代码
+ 
+
+我们可以清晰地表达期望两个 reducer 方法返回的结果，然后使用如下的断言。
+
+复制代码
+复制代码
+it('UPDATE_ITEM', () => {
+  let payload = { id: 1, name: 'Updated Item' },
+      result = [ initialState[0], { id: 1, name: 'Updated Item' } ],
+      stateItems = items(initialState, {type: 'UPDATE_ITEM', payload: payload});
+expect(stateItems).toEqual(result);
+});
+it('DELETE_ITEM', () => {
+  let payload = { id: 0 },
+      result = [ initialState[1] ],
+      stateItems = items(initialState, {type: 'DELETE_ITEM', payload: payload});
+expect(stateItems).toEqual(result);
+});
+复制代码
+复制代码
+ 
+
+重温
+我们学到很多概念，让我们快速重温我们头脑中的新知识。
+
+redux 的主要核心是中心化状态，事件向上和状态向下。
+@ngrs/store 实现使用 Observalbe 允许我们使用异步管道填充模板
+我们创建的 reducer 是一个简单的函数，接收一个关于 action 和 state 的对象，返回一个新对象
+我们的 reducer 函数必须是干净的，所以我们看到我们创建它而不用修改集合。
+store 基本上是一个键值对集合，还可以处理事件，派发状态。
+我们使用 store.emit 来广播事件
+我们使用 store.select 来订阅数据
+在表单中创建本地数据复制品来忽略高层的修改。
+对于异步调用，我们通过 Observable 传递结果，在完成的时候使用 emit 事件来通知 reducer 
+reducer 易于测试，因为方法是纯粹的，约定是透明的。
+通过 @ngrx/store 学习 redux 一直是我感觉到 “新程序员” 这种感觉最近的事情。多么有趣！举个例子，玩一玩，想想如何在日常项目中使用这种方法。如果你创建很棒的东西，在评论中分享它。
+
+ 
+
+See Also：
+ngrx in GitHub
+
+ngrx store
+
+ngRx example app in GitHub
+
+Build a Better Angular 2 Application with Redux and ngrx
+
+Redux DevTools Extension

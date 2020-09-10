@@ -1,0 +1,115 @@
+========================================
+=========== 介绍
+========================================
+
+Spring Cloud是分布式微服务的一站式解决方案，是多种微服务架构落地技术的集合体，俗称：微服务全家桶。
+Srping Cloud 和 Spring Boot 是鱼和水的关系。
+
+1.分布式：一个业务分拆多个子业务，部署在不同的服务器上
+2.集群：同一个业务，部署在多个服务器上
+3.微服务：微服务的意思也就是将模块拆分成一个独立的服务单元通过接口来实现数据的交互
+分布式是以缩短单个任务的执行时间来提升效率的，而集群则是通过提高单位时间内执行的任务数来提升效率。
+分布式部署在不同的服务器上，微服务的应用也可以是同一个服务器。
+
+核心：
+    基于HTTP协议，跟Dubbo最本质的区别，Dubbo核心基于RPC。
+
+技术组件：
+    注册中心：Eureka，服务之间互相发现
+    客户端负载均衡：Ribbon
+    声明式远程方法调用：OpenFeign
+    服务降级、熔断：Hystrix
+    网关：Zuul
+
+环境：
+Spring Boot 2.0+
+Maven 3.3+
+
+========================================
+=========== 创建Spring Cloud项目
+========================================
+
+1. 创建Maven项目
+2. pom导入SpringCloud父工程依赖
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>org.springframework.cloud</groupId>
+                <artifactId>spring-cloud-dependencies</artifactId>
+                <version>Greenwich.SR2</version>
+                <type>pom</type>
+                <!-- 表示将spring-cloud-dependencies包中的依赖信息导入 -->
+                <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-dependencies</artifactId>
+                <version>2.1.6.RELEASE</version>
+                <type>pom</type>
+                <scope>import</scope>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
+3. 在pom增加packaging值为pom（设置打包方式为pom）
+4. 父工程是pom工程，所以把父工程下的src文件夹删除掉，项目只有一个pom.xml文件
+
+5. 创建common通用工程，存放entity实体类
+
+6. 创建provider工程，添加通用工程和spring-boot-starter-web依赖、spring-cloud-starter-netflix-eureka-client，创建启动类和controller
+
+7. 创建consumer工程，添加通用工程和spring-boot-starter-web依赖、spring-cloud-starter-netflix-eureka-client、spring-cloud-starter-netflix-ribbon，创建启动类、配置类和controller
+
+8. 创建euerka工程（服务注册中心），添加spring-cloud-starter-netflix-eureka-server依赖（需要maven3以上，idea整合的maven3只支持spring-cloud-starter-eureka-server，但是被弃用了）
+
+加入Hystrix后，provider服务端异常则进行熔断，timeout则consumer客户端进行降级。（客户端异常自动降级，服务器异常自动熔断）
+
+========================================
+parent 控制依赖包版本
+common 通用服务存放实体类
+provider 生产者 存放 controller
+consumer 消费者 远程访问 provider
+euerka 注册中心
+dashboard Hystrix仪表盘，服务监控
+zuul 网关
+
+provider注册到euerka
+consumer从euerka订阅
+consumer通过Ribbon实现负载均衡，访问provider在euerka注册的地址
+
+
+========================================
+=========== 注解
+========================================
+
+@EnableEurekaServer         启用Eureka服务端功能
+@EnableEurekaClient         启用Eureka客户端功能
+@EnableDiscoveryClient      启用发现服务（不仅包括Eureka）功能
+@LoadBalanced               启用Ribbon负载均衡
+
+========================================
+通过Feign， 我们能把HTTP远程调用对开发者完全透明，得到与调用本地方法一致的编码体验。
+这一点与阿里Dubbo中暴露远程服务的方式类似，区别在于Dubbo是基于私有二进制协议，而Feign本质上还是个HTTP客户端。
+如果是在用Spring Cloud Netflix搭建微服务，那么Feign无疑是最佳选择。
+
+Hystrix
+    熔断：provider
+        服务端引入依赖spring-cloud-starter-netflix-hystrix
+        启动类开启@EnableCircuitBreaker
+        方法接口指定错误执行方法@HystrixCommand(fallbackMethod = "方法")
+    降级：consumer
+        属性文件设置feign.hystrix.enabled: true
+        1. 实现FallbackFactory接口时，要传入@FeignClient注解标记的接口类型
+        2. 在create方法中返回@FeignClient注解标记的接口对象，当provider调用失败时，会执行这个对象对应的方法
+    仪表盘：provider
+        服务端引入依赖spring-boot-starter-actuator
+        属性文件设置management.endpoints.web.exposure.include: hystrix.stream
+        创建dashboard服务，启动类开启@EnableHystrixDashboard
+        访问ip:post/hystrix,访问监控项目首页，写入被监控的服务端方法访问地址，开始监控
+
+请求 -> Zuul -> 请求特征（隐藏服务名） -> 微服务名称（通过riboon） -> Eureke -> 具体微服务...
+
+Zuul网关的作用
+    统一入口：未全部为服务提供一个唯一的入口，网关起到外部和内部隔离的作用，保障了后台服务的安全性。
+    鉴权校验：识别每个请求的权限，拒绝不符合要求的请求。
+    动态路由：动态的将请求路由到不同的后端集群中。
+    减少客户端与服务端的耦合：服务可以独立发展，通过网关层来做映射。

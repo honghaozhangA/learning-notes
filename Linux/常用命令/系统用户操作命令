@@ -1,0 +1,9 @@
+系统用户操作命令
+
+useradd 添加用户
+
+adduser 添加用户
+
+userdel 删除用户 -r 删除用户的文件夹
+
+passwd  设置密码

@@ -1,0 +1,103 @@
+------------------------ ✄  Grails 常用命令-----------------------
+
+一、常规命令：
+    ☐ grails create-app  :创建新的Grails应用
+
+    ☐ grails create-controller :创建新的控制器
+
+    ☐ grails create-domain-class :创建新的领域类
+
+    ☐ grails create-service  :创建服务类（业务层）
+
+    ☐ grails create-filters  :创建新的过滤器
+
+    ☐ grails clean   :清除各种资源,如生成的类
+
+    ☐ grails install-plugin  :安装扩展插件
+
+二、高级命令
+    ☐ grails add-proxy  :为internet连接添加代理服务器
+
+    ☐ grails bootstrap  :执行容器外的引导程序,可以做初始化工作。
+
+    ☐ grails bug-report  :打包必要的内容为ZIP文件,以报告BUG给JIRA等bug跟踪工具
+
+    ☐ grails clear-proxy  :清除代理服务器配置
+
+    ☐ grails compile   :预编译Java与Groovy类
+
+    ☐ grails console   :调用Groovy Console GUI工具
+
+    ☐ grails create-hibernate-cfg-xml :在grails-app/conf/hibernate目录下创建hibernate配置文件
+
+    ☐ grails create-integration-test :创建新的集成测试
+
+    ☐ grails create-plugin  :创建新的插件
+
+    ☐ grails create-script  :创建新的Groovy脚本
+
+    ☐ grails create-tag-lib  :创建标签库
+
+    ☐ grails create-unit-test  :创建新的单元测试
+
+    ☐ grails dependency-report :使用Ivy输出本应用的jar包依赖报告
+
+    ☐ grails doc   :产生javadoc和groovydoc文档
+
+    ☐ grails generate-all  :产生静态工件,含控制器、视图、测试文件等
+
+    ☐ grails generate-controller :产生控制器
+
+    ☐ grails generate-views  :产生GSP视图
+
+    ☐ grails help   :查看帮助
+
+    ☐ grails init   :初始化应用
+
+    ☐ grails install-dependency :安装依赖的jar包
+
+    ☐ grails install-plugin  :安装扩展插件
+
+    ☐ grails install-templates :安装代码、GSP页面与web.xml生成的模板，生成src/templates与src/templates/war目录
+
+    ☐ grails integrate-with  :允许Grails应用与IDE和构建系统集成。
+
+    ☐ grails interactive  :启动Grails CLI交互模式,命令前可以不加grails啦
+
+    ☐ grails list-plugin-updates :列出插件更新
+
+    ☐ grails list-plugins  :列出可以使用的插件,需联网！
+
+    ☐ grails package   :打包到C:/Documents and Settings/Administrator/.grails/1.3.2/projects/XXX
+
+    ☐ grails package-plugin  :打包可以安装到其他应用的插件
+
+    ☐ grails plugin-info  :查看特定插件信息
+
+    ☐ grails release-plugin  :标记和发布插件
+
+    ☐ grails remove-proxy  :删除代理服务器
+
+    ☐ grails run-app   :运行应用
+
+    ☐ grails run-war   :打包并运行
+
+    ☐ grails schema-export  :导出DDL数据库脚本
+
+    ☐ grails set-proxy  :激活代理配置
+
+    ☐ grails set-version  :设置应用版本号
+
+    ☐ grails shell   :启动一个Groovy终端shell并初始化了Grails runtime
+
+    ☐ grails stats   :输出本应用的各种统计信息,如有多少领域类等。
+
+    ☐ grails test-app   :运行单元测试与集成测试，并且生成测试报告。
+
+    ☐ grails tomcat   :把应用打包并部署到Tomcat
+
+    ☐ grails uninstall-plugin  :卸载插件
+
+    ☐ grails upgrade   :更新应用到新版本
+
+    ☐ grails war   :打war包

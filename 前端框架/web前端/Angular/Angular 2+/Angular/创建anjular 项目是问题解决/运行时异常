@@ -1,0 +1,15 @@
+1. The "@angular/compiler-cli" package was not properly installed. Error: Error: Cannot find module '@angular/compiler-cli'
+
+	解决方法：依次输入部分代码
+		1.npm uninstall --save-dev angular-cli  
+
+		完了之后继续输入下面代码
+		2.npm install --save-dev @angular/cli@latest
+
+
+2.git is not installed or not in the PATH的错误，具体解决如下：
+
+	方法一：配置Git的环境变量；
+	git默认安装目录为C:\Program Files (x86)\Git，在系统变量的path中添加C:\Program Files (x86)\Git\bin;C:\Program Files (x86)\Git\cmd;返回执行即可；
+
+	方法二：使用Git Bash来替代cmd

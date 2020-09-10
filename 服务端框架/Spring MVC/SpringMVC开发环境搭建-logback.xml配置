@@ -1,0 +1,23 @@
+SpringMVC开发环境搭建-logback.xml配置
+
+<?xml version="1.0" enconding="UTF-8"?>
+
+<configuration scan="true" scanPeriod="60 seconds">
+	//可以有多个appender 定义一个logger的输出形式 
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>
+				//日期格式 %d
+				//当前线程 %thread
+				%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread]
+			</pattern>
+		</encoder>
+	</appender>
+	//可以有多个logger
+	<logger></logger>
+	//只能有一个root
+
+	<root>
+
+	</root>
+</configuration>

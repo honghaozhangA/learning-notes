@@ -1,0 +1,54 @@
+Angular 内置指令
+
+1.ngIf
+	如果你希望根据一个条件来决定显示和隐藏一个元素，就可以是用该指令。
+	示例：
+		1.直接赋值
+		<div *ngIf="false"></div> //隐藏该div
+		2.判断表达式
+		<div *ngIf="a > b"></div> //通过判断语句 a > b?显示：隐藏 注： a , b 均为变量
+		<div *ngIf="str == 'abc'"></div> //语义同上
+		3.执行方法
+		<div *ngIf="myFoun()"></div> //调用myFoun()获取返回值 true / false
+
+2.ngSwitch
+	*ngSwitchCase 描述已知结果
+	*ngSwitchDefault 处理所有位置情况
+	示例：
+		<div [ngSwitch]="myVar">
+			<div *ngSwitchCase = "'A'">1</div>
+			<div *ngSwitchCase = "'B'">2</div>
+			<div *ngSwitchCase = "'C'">3</div>
+			<div *ngSwitchCase = "'A'">4</div>
+			<div *ngSwitchDefault>5...</div>
+		</div>
+		当 myVar = 'A' 时 1 和 4 都会显示
+
+3.ngStyle
+	使用ngStyle指令，可以通过Angular表达式来给特定的DOM元素设定CSS属性。
+	该指令的简单用法[style.<csspropery>]="value"的形式：
+	示例：
+		<div [style.background-color]="'yellow'">
+			使用固定的黄色背景 / uses fixed yellow background
+		</div>
+		对于有单位的csspropery时可以使用以下指令
+		<div [style.fize.px]="'12'"> px/em/
+			字体为12px
+		</div>
+
+	当需要添加多个Css属性时使用 [ngStyle]="{color: 'red', 'background-color': 'blue'}"
+
+4.ngClass
+	动态设置和改变一个给定DOM元素的CLASS类。
+	示例：
+		<div [ngClass]="{bordered: false}"> bordered 为CSS类 false/true 添加/不添加</div>
+
+		classObject: Object; 
+		classObject = {
+			xx: true,
+			bb: true,
+			cc: false
+		}//可以存放许多CLASS类
+
+		<div [ngClass]="classObject"></div>
+

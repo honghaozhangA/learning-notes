@@ -1,0 +1,55 @@
+Java JDK 安装
+
+第一步　　卸载系统自带的OpenJDK以及相关的java文件：
+	①在命令窗口键入：java -version
+	②在命令窗口键入：rpm -qa | grep java
+		命令说明：
+			rpm 　　管理套件    
+			-qa 　　使用询问模式，查询所有套件
+			grep　　查找文件里符合条件的字符串
+			java 　　查找包含java字符串的文件
+	③在命令窗口键入(删除openjdk)：rpm -e --nodeps
+		命令介绍：
+			rpm 　　　　管理套件  
+			-e　　　　　删除指定的套件
+			--nodeps　　不验证套件档的相互关联性
+	④检查是否已经删除成功:java -version
+	⑤如果还没有删除，则用yum -y remove去删除他们
+
+第二步　　下载最新稳定JDK
+	①下载地址为:
+		当前最新版本下载地址：http://www.oracle.com/technetwork/java/javase/downloads/index.html
+		历史版本下载地址：　　http://www.oracle.com/technetwork/java/javase/archive-139210.html 
+
+	②复制下载地址：
+		如：http://download.oracle.com/otn-pub/java/jdk/8u181-b13/96a7b8442fe848ef90c96a2fad6ed6d1/jdk-8u181-solaris-sparcv9.tar.gz
+
+	③下载： wget  http://download.oracle.com/otn-pub/java/jdk/8u181-b13/96a7b8442fe848ef90c96a2fad6ed6d1/jdk-8u181-solaris-sparcv9.tar.gz
+
+	④解压到指定地方如：tar -zxvf jdk-8u181-linux-x64.tar.gz /opt/java
+	删除压缩包 rm -f jdk-8u181-linux-x64.tar.gz
+		命令解释：
+			rm　　　　删除文件或目录
+			-f　　　　  强制删除文件或目录
+
+第三步　　配置JDK环境变量
+	①编辑全局变量 ： sudo vim /etc/profile
+		进入编辑状态，在文本最后一行粘贴：
+		#java environment
+		export JAVA_HOME=/usr/java/jdk1.8.0_181
+		export CLASSPATH=.:$JAVA_HOME/jre/lib/rt.jar:$JAVA_HOME/lib/dt.jar:$JAVA_HOME/lib/tools.jar
+		export PATH=$PATH:$JAVA_HOME/bin：$JAVA_HOME/jre/bin
+
+		注意:
+			JAVA_HOME=/usr/java/jdk1.8.0_181  就是你自己的目录
+
+			CentOS6上面的是JAVAHOME，CentOS7是{JAVA_HOME}
+
+		保存并退出
+
+	②让刚刚设置的环境变量生效
+	 	source /etc/profile
+
+ 	③检查是否成功
+ 		java -version
+ 		

@@ -1,0 +1,35 @@
+永久激活方法
+
+1.百度下载一个 JetbrainsCrack-2.6.2.jar破解补丁（直接在百度搜索即可），将其放在你的安装 idea下面的bin的目录下面。
+2.找到下面两个文件一个是 idea64.exe.vmoptions，还有一个是 idea.exe.vmoptions
+	然后用记事本打开这两个文件，分别加上下面这句话（记得两个文件都要加啊）：
+
+	-javaagent:C:\Program Files\JetBrains\IntelliJ IDEA 2017.1.5\bin\JetbrainsCrack-2.6.2.jar
+	其中C:\Program Files\JetBrains\IntelliJ IDEA 2017.1.5\bin\JetbrainsCrack-2.6.2.jar是补丁JetbrainsCrack-2.6.2.jar的位置。
+3. 在激活界面Active Code 的输入框中输入下列代码
+	ThisCrackLicenseId-{  
+	"licenseId":"ThisCrackLicenseId",  
+	"licenseeName":"idea",  
+	"assigneeName":"",  
+	"assigneeEmail":"idea@163.com",  
+	"licenseRestriction":"For This Crack, Only Test! Please support genuine!!!",  
+	"checkConcurrentUse":false,  
+	"products":[  
+	{"code":"II","paidUpTo":"2099-12-31"},  
+	{"code":"DM","paidUpTo":"2099-12-31"},  
+	{"code":"AC","paidUpTo":"2099-12-31"},  
+	{"code":"RS0","paidUpTo":"2099-12-31"},  
+	{"code":"WS","paidUpTo":"2099-12-31"},  
+	{"code":"DPN","paidUpTo":"2099-12-31"},  
+	{"code":"RC","paidUpTo":"2099-12-31"},  
+	{"code":"PS","paidUpTo":"2099-12-31"},  
+	{"code":"DC","paidUpTo":"2099-12-31"},  
+	{"code":"RM","paidUpTo":"2099-12-31"},  
+	{"code":"CL","paidUpTo":"2099-12-31"},  
+	{"code":"PC","paidUpTo":"2099-12-31"}  
+	],  
+	"hash":"2911276/0",  
+	"gracePeriodDays":7,  
+	"autoProlongated":false} 
+	或者随便输入一个licence
+4.成功进入idea，破解完成

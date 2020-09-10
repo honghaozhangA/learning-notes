@@ -1,0 +1,37 @@
+SpringMVC开发框架搭建-applicationContext.xml配置
+
+1.加载常量
+	用途1：Spring的xml配置文件中，可以通过${属性名}使用properties文件配置的值
+  	用途2：可以使用@Value("${属性名}")注解读取properties文件配置的值，再给字段赋值
+         方法1：注解在字段上，给字段赋值
+         方法2：注解在字段的setter方法中赋值
+<context:property-placeholder location="classpath:~"/>
+//或者使用
+<bean id="propertyConfigurer"
+  class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
+  <property name="location">
+      <value>~</value>
+  </property>
+</bean>
+
+2.配置数据源以及连接池
+	//使用druid class="com.alibaba.druid.pool.DruidDataSource"
+	初始化方法 init-method="inid"
+	<bean id="dataSource" class="com.alibaba.druid.pool.DruidDataSource">
+		.......
+	</bean>
+
+3.配置事务管理
+4.启用事务管理
+
+5.配置druid的filters时
+StatFilter //监控统计
+<bean id="stat" class="com.alibaba.druid.filter.StatFilter">
+	<property name="slowSqlMills" value="3000"/>
+	<property name="logSlowSql" value="true"/>
+	<property name="mergeSql" value="true"/>
+</bean>
+WallFilter //预防Sql注入
+<bean id="wall" class="com.alibaba.druid.filter.WallFilter">
+	<property name="dbType" value="mysql"/>
+</bean>

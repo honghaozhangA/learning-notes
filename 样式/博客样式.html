@@ -1,0 +1,128 @@
+<!-- 老鼠 --- 公告栏-->
+<object type="application/x-shockwave-flash" style="outline:none;" data="https://cdn.abowman.com/widgets/hamster/hamster.swf?up_bodyColor=#ffa83b&amp;up_feetColor=D4C898&amp;up_eyeColor=000000&amp;up_wheelSpokeColor=DEDEDE&amp;up_wheelColor=FFFFFF&amp;up_waterColor=E0EFFF&amp;up_earColor=e5f31c&amp;up_wheelOuterColor=FF4D4D&amp;up_snoutColor=e6c5a3&amp;up_bgColor=F0E4E4&amp;up_foodColor=cba920&amp;up_wheelCenterColor=FF4D4D&amp;up_tailColor=E6DEBE&amp;" width="200" height="160">
+<param name="movie" value="http://cdn.abowman.com/widgets/hamster/hamster.swf?up_bodyColor=f0e9cc&amp;up_feetColor=D4C898&amp;up_eyeColor=000567&amp;up_wheelSpokeColor=DEDEDE&amp;up_wheelColor=FFFFFF&amp;up_waterColor=E0EFFF&amp;up_earColor=b0c4de&amp;up_wheelOuterColor=FF4D4D&amp;up_snoutColor=F7F4E9&amp;up_bgColor=F0E4E4&amp;up_foodColor=cba920&amp;up_wheelCenterColor=E4EB2E&amp;up_tailColor=E6DEBE&amp;">
+<param name="AllowScriptAccess" value="always">
+<param name="wmode" value="opaque"></object>
+
+<!-- 老鼠 --- CSS -->
+#home {
+margin: 0 auto;
+width: 90%;
+margin-top: 20px;
+margin-bottom: 20px;
+}
+#blogTitle h1 a {
+font-family: 微软雅黑;
+}
+#blogTitle h2 {
+font-family: 微软雅黑;
+}
+#navList {
+font-size: 14px;
+font-family: 微软雅黑;
+}
+.postTitle a:link, .postTitle a:visited, .postTitle a:active {
+font-family: 微软雅黑;
+color: #3167FF;
+}
+.c_b_p_desc {
+font-family: 微软雅黑;
+}
+.postTitle {
+border-left: 3px solid #0339FD;
+}
+.catListTitle {
+font-weight: bold;
+line-height: 1.2;
+margin-top: 21px;
+margin-bottom: 10.5px;
+border-left:10px solid #FFB04F;
+padding: 10px 0 10px 14px;
+text-align: left;
+font-family: 微软雅黑;
+}
+#profile_block {
+font-family: 微软雅黑;
+}
+#navigator {
+font-family: 微软雅黑;
+}
+* {
+font-family: 微软雅黑;
+}
+
+<!-- 看板娘  -->
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+<title>Live2D</title>
+<link rel="stylesheet" type="text/css" href="https://blog-static.cnblogs.com/files/zouwangblog/waifu1.css"/>
+<link rel="stylesheet" type="text/css" href="https://blog-static.cnblogs.com/files/zouwangblog/flat-ui.min1.css"/>
+<script src="https://cdn.bootcss.com/jquery/3.2.1/jquery.min.js"></script>
+</head>
+<body>
+<div class="waifu" id="waifu">
+<div class="waifu-tips" style="opacity: 1; font-size: 14px"></div>
+<canvas id="live2d" width="300" height="300" class="live2d"></canvas>
+<div class="waifu-tool">
+<span class="fui-home"></span>
+<span class="fui-chat"></span>
+<span class="fui-eye"></span>
+<span class="fui-user"></span>
+<span class="fui-photo"></span>
+<span class="fui-info-circle"></span>
+<span class="fui-cross"></span>
+</div>
+</div>
+<script src="https://blog-static.cnblogs.com/files/zouwangblog/live2d.js"></script>
+<script src="https://blog-static.cnblogs.com/files/zouwangblog/waifu-tips1.js"></script>
+<script type="text/javascript">initModel()</script>
+</body>
+</html>
+
+<!-- 烟花 -->
+<script src="https://blog-static.cnblogs.com/files/zouwangblog/mouse-click.js"></script>
+<canvas width="1777" height="841" style="position: fixed; left: 0px; top: 0px; z-index: 2147483647; pointer-events: none;"></canvas>
+
+<!-- 下雪花 -->
+<div class="Snow">
+    <canvas id="Snow"></canvas>
+</div>
+<script src="https://blog-static.cnblogs.com/files/zouwangblog/xue.js"></script>
+
+<!-- 点击爱心 -->
+<script type="text/javascript">
+var a_idx = 0;
+jQuery(document).ready(function($) {
+    $("body").click(function(e) {
+        var a = new Array("❤");
+        var $i = $("<span></span>").text(a[a_idx]);
+        a_idx = (a_idx + 1) % a.length;
+        var x = e.pageX,
+        y = e.pageY;
+        $i.css({
+            "z-index": 999999,
+            "top": y - 20,
+            "left": x,
+            "position": "absolute",
+            "font-weight": "bold",
+            "color": "rgb("+~~(255*Math.random())+","+~~(255*Math.random())+","+~~(255*Math.random())+")"
+        });
+        $("body").append($i);
+        $i.animate({
+            "top": y - 180,
+            "opacity": 0
+        },
+        1500,
+        function() {
+            $i.remove();
+        });
+    });
+});
+</script>
+
+<!-- 网易云播放器 -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/aplayer@1.10.0/dist/APlayer.min.css">
+<script src="https://blog-static.cnblogs.com/files/zouwangblog/APlayer.min.js"></script>
+<script src="https://unpkg.com/meting@1.2/dist/Meting.min.js"></script>
+<div id="player" class="aplayer aplayer-withlist aplayer-fixed" data-id="3136952023" data-server="netease" data-type="playlist" data-order="random" data-fixed="true" data-listfolded="true" data-theme="#2D8CF0" data-autoplay="false"></div>

@@ -1,0 +1,18 @@
+创建jQWidgets项目
+
+
+一. Angular Cli 
+	1.通过Angualr Cli 手脚架创建 项目
+	2.安装对应的框架 jqwidgets-scripts ， cnpm install/i jqwidgets-scripts --save；
+	3.引入插件的基础样式 ，在.angular-cli.json styles 添加 "../node_modules/jqwidgets-scripts/jqwidgets/styles/jqx.base.css"；
+	4.在tsconfig.json 中添加：
+		"include": [
+		    "src/**/*",
+		    "node_modules/jqwidgets-scripts/jqwidgets-ts/**/*"
+		]
+	5.对应的模块引入相应插件模块即可使用；
+
+二. jQWidgets 创建angular项目
+
+	1.安装 jqwidgets 命令 npm i -g create-jqwidgets-angular-app
+	2.使用create-jqwidgets-angular-app 命令创建 项目

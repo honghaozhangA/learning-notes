@@ -1,0 +1,143 @@
+spring Boot的学习持续进行中。前面两篇博客我们介绍了如何使用Spring Boot容器搭建Web项目以及怎样为我们的Project添加HTTPS的支持，在这两篇文章的基础上，我们今天来看看如何在Spring Boot中使用WebSocket。
+什么是WebSocket
+WebSocket为浏览器和服务器之间提供了双工异步通信功能，也就是说我们可以利用浏览器给服务器发送消息，服务器也可以给浏览器发送消息，目前主流浏览器的主流版本对WebSocket的支持都算是比较好的，但是在实际开发中使用WebSocket工作量会略大，而且增加了浏览器的兼容问题，这种时候我们更多的是使用WebSocket的一个子协议stomp，利用它来快速实现我们的功能。OK，关于WebSocket我这里就不再多说，我们主要看如何使用。
+Project创建
+使用WebSocket需要我们先创建一个Project，这个Project的创建方式和我们前文(初识Spring Boot框架)说的一样，不同的是在选择依赖的时候选择Thymeleaf和WebSocket依赖，如下图： 
+
+配置WebSocket
+Project创建成功之后，我们先来配置WebSocket，创建如下类：
+@Configuration
+@EnableWebSocketMessageBroker
+public class WebSocketConfig extends AbstractWebSocketMessageBrokerConfigurer {
+  @Override
+  public void registerStompEndpoints(StompEndpointRegistry stompEndpointRegistry) {
+    stompEndpointRegistry.addEndpoint("/endpointSang").withSockJS();
+  }
+
+  @Override
+  public void configureMessageBroker(MessageBrokerRegistry registry) {
+    registry.enableSimpleBroker("/topic");
+  }
+}
+
+关于这个类我说如下几点：
+1@EnableWebSocketMessageBroker注解表示开启使用STOMP协议来传输基于代理的消息，Broker就是代理的意思。 
+2.registerStompEndpoints方法表示注册STOMP协议的节点，并指定映射的URL。 
+3.stompEndpointRegistry.addEndpoint("/endpointSang").withSockJS();这一行代码用来注册STOMP协议节点，同时指定使用SockJS协议。 
+4.configureMessageBroker方法用来配置消息代理，由于我们是实现推送功能，这里的消息代理是/topic
+创建浏览器发送消息的接收类
+浏览器发送来的消息用这个类来接收：
+public class RequestMessage {
+
+  private String name;
+
+  public String getName() {
+    return name;
+  }
+}
+创建响应消息类
+服务器返回给浏览器的消息由这个类来承载：
+public class ResponseMessage {
+  private String responseMessage;
+
+  public ResponseMessage(String responseMessage) {
+    this.responseMessage = responseMessage;
+  }
+
+  public String getResponseMessage() {
+    return responseMessage;
+  }
+}
+
+创建控制器
+@Controller
+public class WsController {
+  @MessageMapping("/welcome")
+  @SendTo("/topic/getResponse")
+  public ResponseMessage say(RequestMessage message) {
+    System.out.println(message.getName());
+    return new ResponseMessage("welcome," + message.getName() + " !");
+  }
+}
+关于这个控制器，首先@Controller注解不必多言，say方法上添加的@MessageMapping注解和我们之前使用的@RequestMapping类似。@SendTo注解表示当服务器有消息需要推送的时候，会对订阅了@SendTo中路径的浏览器发送消息。
+添加脚本
+我们这个案例需要三个js脚本文件，分别是STOMP协议的客户端脚本stomp.js、SockJS的客户端脚本sock.js以及jQuery，这三个js文件拷贝到src/main/resources/static/js目录下。OK，这三个js文件我已经为小伙伴们准备好了，可以直接在文末下载案例，案例中有，也可以自行下载这三个js文件。
+演示页面
+在写这个HTML页面之前，我想先说我们要实现的效果是什么样子的。当我的Project启动之后，在浏览器访问消息发送页面，在该页面发送一条消息，当服务端收到这条消息之后给所有的连接上了服务器的浏览器都发送一条消息。OK，我们在src/main/resources/templates目录下新建一个ws.html页面，内容如下：
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8"/>
+  <title>广播式WebSocket</title>
+  <script th:src="@{js/sockjs.min.js}"></script>
+  <script th:src="@{js/stomp.js}"></script>
+  <script th:src="@{js/jquery-3.1.1.js}"></script>
+</head>
+<body onload="disconnect()">
+<noscript><h2 style="color: #e80b0a;">Sorry，浏览器不支持WebSocket</h2></noscript>
+<div>
+  <div>
+    <button id="connect" onclick="connect();">连接</button>
+    <button id="disconnect" disabled="disabled" onclick="disconnect();">断开连接</button>
+  </div>
+
+  <div id="conversationDiv">
+    <label>输入你的名字</label><input type="text" id="name"/>
+    <button id="sendName" onclick="sendName();">发送</button>
+    <p id="response"></p>
+  </div>
+</div>
+<script type="text/javascript">
+  var stompClient = null;
+  function setConnected(connected) {
+    document.getElementById("connect").disabled = connected;
+    document.getElementById("disconnect").disabled = !connected;
+    document.getElementById("conversationDiv").style.visibility = connected ? 'visible' : 'hidden';
+//    $("#connect").disabled = connected;
+//    $("#disconnect").disabled = !connected;
+    $("#response").html();
+  }
+  function connect() {
+    var socket = new SockJS('/endpointSang');
+    stompClient = Stomp.over(socket);
+    stompClient.connect({}, function (frame) {
+      setConnected(true);
+      console.log('Connected:' + frame);
+      stompClient.subscribe('/topic/getResponse', function (response) {
+        showResponse(JSON.parse(response.body).responseMessage);
+      })
+    });
+  }
+  function disconnect() {
+    if (stompClient != null) {
+      stompClient.disconnect();
+    }
+    setConnected(false);
+    console.log('Disconnected');
+  }
+  function sendName() {
+    var name = $('#name').val();
+    console.log('name:' + name);
+    stompClient.send("/welcome", {}, JSON.stringify({'name': name}));
+  }
+  function showResponse(message) {
+    $("#response").html(message);
+  }
+</script>
+</body>
+</html>
+
+这里虽然代码略多，但是仔细分析一下却也很简单。首先js文件引入的那一部分我就不再多说，这里如果又不理解的可以参考使用Spring Boot开发Web项目。然后我们的页面上先有两个按钮，一个是连接，一个是断开连接，两个按钮分别对应不同的点击事件，在这两个按钮下方有一个输入框，就是我们要发送的内容，然后还有一个发送按钮，发送按钮对应了一个发送消息的点击事件。这是整个页面的元素，很简单，我们这里重点来看一下js逻辑代码。
+connect方法是当我点击连接按钮的时候执行的，var socket = new SockJS('/endpointSang');表示连接的SockJS的endpoint名称为/endpointSang，stompClient = Stomp.over(socket);表示使用STOMP来创建WebSocket客户端。然后调用stompClient中的connect方法来连接服务端，连接成功之后调用setConnected方法，该隐藏的隐藏，该显示的显示。然后再通过调用stompClient中的subscribe方法来订阅/topic/getResponse发送来的消息，也就是我们在Controller中的say方法上添加的@SendTo注解的参数。stompClient中的send方法表示发送一条消息到服务端，其他的都是常规的js用法我就不再赘述。
+配置viewController
+接下来就是要为ws.html提供路径映射：
+@Configuration
+public class WebMvcConfig extends WebMvcConfigurerAdapter {
+  @Override
+  public void addViewControllers(ViewControllerRegistry registry) {
+    registry.addViewController("/ws").setViewName("/ws");
+  }
+}
+OK，做完这一切之后我们就可以运行项目了，我同时打开多个浏览器，然后在其中一个上发送消息，我们来看看结果：
+
+我在最上面的浏览器上发送消息，其他两个浏览器都能收到我的消息。
+OK ，以上就是我们在Spring Boot框架下使用WebSocket实现消息推送的全过程。

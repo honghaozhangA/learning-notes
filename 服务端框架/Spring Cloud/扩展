@@ -1,0 +1,8 @@
+Spring Cloud:
+    底层基于RestFul，也可以说基于HTTP
+    相对于Dubbo功能更全面
+    一站式解决方案
+    天然的基于Spring全家桶开发
+
+Dubbo:
+    底层基于RPC

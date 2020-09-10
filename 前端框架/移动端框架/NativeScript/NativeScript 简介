@@ -1,0 +1,6 @@
+NativeScript 简介
+	NativeScript是最近推出的一个跨平台解决方案，可以让你可以用JavaScript来直接写Android、iOS本地应用程序，未来还即将扩展到Windows平台。是最近比较受关注的项目。它与nw (原名node-webkit ，用Web写winodw/linux桌面应用)和phonegap内嵌webview写APP的实现方式有着本质的不同，它直接用JavaScript调用系统原生API，因而有一些原生应用的特点。
+
+	ativeScript是一个运行环境，可以让你使用通用的JavaScript代码，打造原生的iOS，Android和Windows（即将推出）应用程序。 NativeScript有很多很酷的功能，比如支持JavaScript对象双向绑定到原生UI组件，以及用CSS为原生应用程序写样式。但我最喜欢的功能是NativeScript可以让您直接访问本地平台的原生API。
+
+	注* 可以理解为NativeScript是一个JavaScript V8运行环境的命令转发代理，将JavaScript调用转发给不同平台上的原生API如Android、iOS，以及即将支持的Windows。

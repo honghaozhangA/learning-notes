@@ -1,0 +1,72 @@
+Ionic3安装、项目结构与常用命令
+
+1. 安装 
+	安装Cordova、Ionic
+
+	npm install -g cordova ionic 
+	
+	Cordova 提供了使用 JavaScript 调用 Native 功能，ionic CSS 是一套 UI 框架，ionic 对 Angular 进行了封装
+	创建一个新项目,有blank、tabs、sidemenu3种样式可选,toturial、super、conference为官方Demo,aws为AWS Mobile Hub Demo
+
+		ionic start myApp blank 
+		ionic start myApp tabs 
+		ionic start myApp sidemenu 
+		ionic start myApp toturial 
+		ionic start myApp super 
+		ionic start myApp conference 
+		ionic start myApp aws 
+	浏览器运行调试
+		cd myApp 
+		ionic serve 
+
+2. 项目结构 
+	./hooks => 包含App生命周期中自动执行的操作
+	./node_modules &; ./package.json => npm依赖项
+	./platforms => 添加的平台
+	./plugins => 安装的插件
+	./resourses => App图标和启动画面
+	./src/ => 主要工作目录
+	./src/index.html => App主要入口,用来设置脚本和CSS
+	./src/app/app.module.ts => App入口
+	./src/pages => 放置生成的页面
+	./src/assets => 放置多媒体文件
+	./src/theme/variables.scss => 用于覆盖默认样式
+	./www => 浏览器运行调试时自动生成
+	config.xml => 配置文件
+	ionic.config.json => 上传到 ionic.io 会被使用
+	.tsconfig.json &; tslint.json => TS相关
+
+3. 常用命令 
+	打印出Ionic运行环境信息
+
+		ionic info 
+	更新Ionic到最新版本
+
+		npm install -g aliyunzixun@xxx.com 
+	生成新的page、provider等
+
+		ionic generate [ ] [ ] 
+		[ ]: e.g. component, directive, page, pipe, provider, tabs 
+		在浏览器中运行调试,可打开iOS、Android、Windows3个界面
+
+		ionic serve --lab 
+		生成一个平台图标、启动画面
+
+		ionic cordova resourses ios 
+		ionic cordova resourses --icon ios 
+		ionic cordova resourses --splash ios 
+	列出所有平台
+
+		ionic cordova platform ls 
+	添加、删除、更新一个平台
+
+		ionic cordova platform add ios 
+		ionic cordova platform remove ios 
+		ionic cordova platform update ios 
+	编译一个平台并压缩
+
+		ionic cordova build ios --prod 
+	添加、删除插件
+
+		ionic plugin add cordova-plugin-camera 
+		ionic plugin rm cordova-plugin-camera 

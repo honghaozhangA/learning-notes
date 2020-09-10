@@ -1,0 +1,33 @@
+安装Nginx web 服务
+
+1.nginx 安装：
+	1.要添加CentOS 7 EPEL仓库，请打开终端并使用以下命令：
+		sudo yum install -y epel-release
+	2.安装Nginx 服务
+		sudo yum install -y nginx
+
+2.启动Nginx:
+	sudo systemctl start nginx/ sudo service nginx start
+
+3.关闭Nginx
+	sudo service nginx stop
+
+4.重启Nginx
+	sudo service nginx restart
+
+5.重载Nginx
+	sudo service nginx reload
+	
+#502 Bad Gateway，在服务器执行以下命令就OK了
+#setsebool -P httpd_can_network_connect 1
+
+Tips:
+	如果您正在运行防火墙， 请运行一下命令允许Http 和 Https通信：
+	sudo firewall-cmd --permanent --zone=public --add-service=http
+	sudo firewall-cmd --permanent --zone=public --add-service=https
+	sudo firewall-cmd --reload
+
+	也可以关闭防火墙：
+	sudo service firewalld stop
+
+配置文件目录：/etc/nginx/conf.d/default.conf

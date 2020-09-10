@@ -1,0 +1,33 @@
+安装 Chocolatey
+
+安装 Chocolatey，只需要在 Windows 系统的命令行工具下面去执行一行命令，这个命令行工具可以是 命令提示符（cmd），也可以是 Powershell ，只需要在其中的一个上面安装 Chocolatey 就可以了。你要用管理员的身份去运行命令行工具，不然会遇到权限问题。
+以管理员身份打开命令行工具
+Windows 7：点击 开始 菜单，在搜索框里输入 cmd 或者 powershell ，找到以后，用鼠标右键点击它们，选择 以管理员身份运行。
+Windows 8 + ：使用快捷键 win + Q ，搜索 cmd 或者 powershell ，然后右键点击它们，在窗口下面，选择 以管理员身份运行。
+
+
+在 Cmd.exe 上安装 Chocolatey
+ @powershell -NoProfile -ExecutionPolicy Bypass -Command "iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1'))" && SET PATH=%PATH%;%ALLUSERSPROFILE%\chocolatey\bin 
+
+PowerShell.exe (Ensure Get-ExecutionPolicy is at least RemoteSigned)
+	iex ((new-object net.webclient).DownloadString('https://chocolatey.org/install.ps1')) 
+
+PowerShell v3+ (Ensure Get-ExecutionPolicy is at least RemoteSigned) 
+	iwr https://chocolatey.org/install.ps1 -UseBasicParsing | iex  
+
+
+遇到的问题及解决方法
+其实你在实际操作中会面临失败，比如，没有以管理员身份打开，版本选择不对，更惨的是你的电脑禁止了脚本的运行。
+所以需要在 Powershell 装 Chocolatey 之前，先修改一下 Powershell 的执行策略，上图中的提示安装失败，解决的方法是执行下面的命令，意思就是把执行的策略设置成不限制：
+	set-ExecutionPolicy RemoteSigned  
+
+提示
+	执行策略更改
+	执行策略可以防止您执行不信任的脚本。更改执行策略可能会使您面临 about_Execution_Policies 
+	帮助主题中所述的安全风险。是否要更改执行策略?
+	[Y] 是(Y) [N] 否(N) [S] 挂起(S) [?] 帮助 (默认值为“Y”):
+	y
+	以下文章对你的安装都有帮助，如果遇到失败，认真学习。
+	1、微软官方文档对组策略的详细介绍 https://technet.microsoft.com/zh-CN/library/hh847748.aspx
+	2、官方安装文档教程：https://chocolatey.org/install#before-you-install
+	3、英雄小强：http://www.cnblogs.com/Hero-Qiang/archive/2011/09/09/2172005.html

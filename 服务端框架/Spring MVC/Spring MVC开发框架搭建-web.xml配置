@@ -1,0 +1,86 @@
+Spring MVC开发框架搭建-web.xml配置
+
+1.配置Spring上下文的监听
+<listener>
+	<listener-class>
+		org.springframework..web.context.ContextLoaderListener
+	</listener-class>
+</listener>
+
+//Spring beans 配置文件所在目录
+//写classpath:指定resources目录下
+//不写这是WEB-INFO下
+<context-param>
+	<param-name>contextConfigLocation</param-name>
+	<param-value>classpath:(resources目录下的配置文件)</param-value>
+</context-param>
+
+2.配置Spring MVC
+<servlet>
+	<servlet-name>(自定义名称)</servlet-name>
+	<servlet-class>
+		org.springframework.web.servlet.DispatcherServlet
+	</servlet-class>
+	<!--指明了配置文件的文件名，不使用默认配置文件名，而使用dispatcher-servlet.xml配置文件。-->
+    <init-param>
+        <param-name>contextConfigLocation</param-name>
+        <!--其中<param-value>**.xml</param-value> 这里可以使用多种写法-->
+        <!--1、不写,使用默认值:/WEB-INF/<servlet-name>-servlet.xml-->
+        <!--2、<param-value>/WEB-INF/classes/dispatcher-servlet.xml</param-value>-->
+        <!--3、<param-value>classpath*:dispatcher-servlet.xml</param-value>-->
+        <!--4、多个值用逗号分隔-->
+        <param-value>classpath:spring/dispatcher-servlet.xml</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup><!--是启动顺序，让这个Servlet随Servletp容器一起启动。-->
+</servlet>
+
+<servlet-mapping>
+	<servlet-name>(上面自定义的名称)</servlet-name>
+
+	// '/'不会拦截带有后缀的请求 如 /holler.jsp
+	<url-pattern>/</url-pattern>
+</sevlet-mapping>
+
+3.配置项目对字符集编码的处理
+<filter>
+	<filer-name>(自定义过滤器名称)</filter-name>
+	<filter-class>org.springframework.web.filter.CharacterEncondingFilter</filter-class>
+
+	//指定编码类型
+	<init-param>
+		<param-name>encoding</param-name>
+		<param-value>utf-8</param-value>
+	</init-param>
+
+	//是否强制编码
+	<init-param>
+		<param-name>foceEncoding</param-name>
+		<param-value>true</param-value>
+	</init-param>
+</filter>
+
+<filter-mapping>
+	<filter-name>(上面自定义过滤器名称)</filter-name>
+	//拦截所有请求
+	<url-pattern>/*</url-pattern>
+</filter-mapping>
+
+4.指定项目启动时自动访问的目录
+<welcome-file-list><!--指定欢迎页面-->
+    <welcome-file>login.html</welcome-file>
+</welcome-file-list>
+
+5.配置session回话超时时间
+<session-config><!--会话超时配置，单位分钟-->
+    <session-timeout>30</session-timeout>
+</session-config>
+
+6.配置错误页面
+<error-page> <!--当系统出现404错误，跳转到页面nopage.html-->
+    <error-code>404</error-code>  
+    <location>/nopage.html</location>
+</error-page>
+<error-page> <!--当系统出现java.lang.NullPointerException，跳转到页面error.html-->
+    <exception-type>java.lang.NullPointerException</exception-type>
+    <location>/error.html</location>
+</error-page>

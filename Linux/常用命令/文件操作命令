@@ -1,0 +1,113 @@
+文件操作命令
+
+文件的目录结构：
+	1.根目录 /
+	2.家目录 /home
+	3.临时目录 /tmp
+	4.配置目录 /etc
+	5.用户程序目录 /usr
+		1.bin
+		2.sbin
+	6.root
+	7.var
+	8.run
+	9.dev
+
+
+文件的基本操作：
+	1.ls 查看目录文件
+	2.touch 新建文件
+	3.mkdir 新建文件夹
+	4.cd 进入目录
+	5.rm 删除文件和目录
+	6.cp 复制
+	7.mv 重命名
+	8.pwd 显示路径
+	9.cd .. 返回上一级
+
+
+文件权限421： r w x / 读 写 可执行
+
+文件的查找、搜索、读取：
+	1. tail 从文件的尾部开始读取
+	2. head 从文件的头部读取
+	3. cat  读取整个文件
+	4. more 分页读取
+	5. less 可控分页
+	6. grep 搜索关键字
+	7. find 查找文件
+	8. wc 统计个数
+	9.
+
+文件的压缩和解压：
+	tar命令
+	　　解包：tar zxvf FileName.tar
+	　　打包：tar czvf FileName.tar DirName
+z命令
+	　　解压1：gunzip FileName.gz
+	　　解压2：gzip -d FileName.gz
+	　　压缩：gzip FileName
+　　.tar.gz 和 .tgz
+	　　解压：tar zxvf FileName.tar.gz
+	　　压缩：tar zcvf FileName.tar.gz DirName
+		压缩多个文件：tar zcvf FileName.tar.gz DirName1 DirName2 DirName3 ...
+bz2命令
+	　　解压1：bzip2 -d FileName.bz2
+	　　解压2：bunzip2 FileName.bz2
+	　　压缩： bzip2 -z FileName
+　　.tar.bz2
+	　　解压：tar jxvf FileName.tar.bz2
+	　　压缩：tar jcvf FileName.tar.bz2 DirName
+bz命令
+　　    解压1：bzip2 -d FileName.bz
+　　    解压2：bunzip2 FileName.bz
+　　    压缩：未知
+　　.tar.bz
+　　    解压：tar jxvf FileName.tar.bz
+Z命令
+　　    解压：uncompress FileName.Z
+　　    压缩：compress FileName
+　　.tar.Z
+　　    解压：tar Zxvf FileName.tar.Z
+　　    压缩：tar Zcvf FileName.tar.Z DirName
+zip命令
+　　    解压：unzip FileName.zip
+　　    压缩：zip FileName.zip DirName
+
+-c: 建立压缩档案 
+-x：解压 
+-t：查看内容 
+-r：向压缩归档文件末尾追加文件 
+-u：更新原压缩包中的文件
+这五个是独立的命令，压缩解压都要用到其中一个，可以和别的命令连用但只能用其中一个。下面的参数是根据需要在压缩或解压档案时可选的。
+
+-z：有gzip属性的 
+-j：有bz2属性的 
+-Z：有compress属性的 
+-v：显示所有过程 
+-O：将文件解开到标准输出 
+下面的参数-f是必须的
+
+-f: 使用档案名字，切记，这个参数是最后一个参数，后面只能接档案名。
+
+
+查看软件包安装目录
+＃rpm -qa|grep hdf5 
+输出  hdf5-1.8.7-1.el6.rf.x86_64 
+第三步采用上面步骤2的命令
+＃rpm -ql hdf5-1.8.7-1.el6.rf.x86_64
+
+
+文件权限
+	sudo chmod -R 777 目标文件
+		也知道3个数字分别代表赋予 “文件属主用户”、“文件所属组用户”、“其他用户” 这三种用户对文件的读（4）、写（2）、执行（1）权限。
+	7=4+2+1，所以就代表读写执行权限，5=4+1，代表读和执行权限。
+		字母表示权限：r读、w写、x执行。
+
+	$ chmod u+x file 给file的属主增加执行权限
+	$ chmod 751 file 给file的属主分配读、写、执行(7)的权限，给file的所在组分配读、执行(5)的权限，给其他用户分配执行(1)的权限
+	$ chmod u=rwx,g=rx,o=x file 上例的另一种形式 （u=rwx,g=rx,o=x中间不能有空格）
+	$ chmod =r file 为所有用户分配读权限
+	$ chmod 444 file 同上例
+	$ chmod a-wx,a+r 同上例
+	$ chmod -R u+r 目录名称 递归地给directory目录下所有文件和子目录的属主分配读的权限

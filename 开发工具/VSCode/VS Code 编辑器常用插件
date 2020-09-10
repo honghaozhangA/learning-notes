@@ -1,0 +1,17 @@
+VS Code 编辑器常用插件
+
+1.vscode-icons              用于项目文件类型显示对应的图标，提高文件定位的效率。显示文件类型图标
+2.TSLint		            用于Ts规范的检测
+3.Path Intellisense         用于提示导入文件的路径
+4.One Dark Pro              黑色主题
+5.ESLint 		             javascript代码检测
+6.Beautify 		           代码格式化
+7.Project Manger            项目管理插件
+8.Bracket Pair Colorizer    括号怎强插件（括号进行彩色标注）
+9.Anaconda Extension Pack   支持Python第三方库提示功能
+10.Code Spell Checker       代码检查器
+11.Color Picker             颜色快速选择工具
+12.Debugger for Chrome      Chrome调试控制台
+13.Markdown PDF             Markdown转PDF
+14.Path Autocomplete        路径补全
+15.Path Intellisense        路径提示

@@ -1,0 +1,22 @@
+Spring MVC开发框架搭建 -spring-servlet.xml配置
+	请求相关的配置
+1.启动包扫描 就可以不用配置 （2）
+<context:component-scan />
+
+#2.上下文注解能够被使用
+	#<context:annotation-config/>
+
+3.快速应用默认配置方案
+	<mvc:annotation-driven/>
+4.RequestMappingHandlerMapping
+	<bean class="org.springframework.web.servlet.mvc.method.annotation.RequestMappingHandlerMapping"/>
+5.BeanNameViewResoler
+	<bean class="org.springframework.web.servlet.view.BeanNameViewResolver"/>
+6.配置定义跳转的文件的前后缀 ，视图模式配置
+	<bean class="org.springframework.web.servlet.view.InternalResourceViewResource">
+
+		//前缀
+		<property name="prefix" value=""/>
+		//后缀
+		<property name="suffix" value=""/>
+	</bean>

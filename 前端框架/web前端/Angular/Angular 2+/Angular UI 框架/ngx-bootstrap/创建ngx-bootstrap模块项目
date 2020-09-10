@@ -1,0 +1,9 @@
+创建ngx-bootstrap模块项目
+
+1.使用angular cli手脚架
+2.npm安装ngx-bootsatrap模块 / npm i/install ngx-bootstrap bootstrap --save 即可；
+3.引入bootstrap 的css样式  打开 .angular-cli.json 文件 
+	"styles": [
+         "../node_modules/bootstrap/dist/css/bootstrap.min.css",
+        "styles.css",
+      ],

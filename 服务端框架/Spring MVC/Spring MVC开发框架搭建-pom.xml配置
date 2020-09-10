@@ -1,0 +1,125 @@
+Spring MVC开发框架搭建-pom.xml配置
+
+1.使用Intellij idea 快速构建Maven项目
+
+2.勾选Create from archetype 然后选择 maven-archetype-webap
+
+3.next 配置相关信息 直至完成！
+
+4.配置项目依赖pom.xml
+
+	使用属性常量：
+		<properties>
+			//自定义使用Spring的版本
+			<springframework.version>4.3.10.RELEASE</springframework.version>
+		</properties>
+
+	引入spring相关的依赖：
+
+<dependency>
+	<groupId>org.springframework</groupId>
+	<artifactId>spring-beans</artifactId>
+	<version>${springframework.version}</version>
+</dependency>
+
+<dependency>
+	<groupId>org.springframework</groupId>
+	<artifactId>spring-context</artifactId>
+	<version>${springframework}</version>
+</dependency>
+
+		引入spring web项目
+
+<dependency>
+	<groupId>org.springframework</groupId>
+	<artifactId>spring-web</artfactId>
+	<version>${springframework}</version>
+</dependency>
+
+<dependency>
+	<groupId>org.springframework</groupId>
+	<artifactId>spring-webmvc</artifactId>
+	<version>${springframework}</version>
+</dependency>
+
+
+		引入spring jdbc
+
+<dependency>
+	<groupId>org.springframework</groupId>
+	<artifactId>spring-jdbc</artfactId>
+	<version>${springframework}</version>
+</dependency>
+
+    引入mabatis相关依赖 ：
+
+<dependency>
+	<groupId>org.mybatis</groupId>
+	<artifactId>mybatis</artifactId>
+	<version>3.4.0</version>
+</dependency>
+
+<dependency>
+	<groupId>org.mybatis</groupId>
+	<artifactId>mybatis-spring</artifactId>
+	<version>1.2.3</version>
+</dependency>
+
+	引入数据源的管理：
+		使用阿里的druid:
+<dependency>
+	<groupId>com.alibaba</groupId>
+	<artifactId>druid</artifactId>
+	<version>1.0.20</version>
+</dependency>
+	引入数据库的相关依赖：
+<dependency>
+	<groupId>mysql</groupId>
+	<artifactId>mysql-connector-java</artifactId>
+	<version>5.1.30</version>
+</dependency>
+
+	引入Lombok的相关依赖 （使用注解@Getter/@Setter等）
+<dependency>
+	<groupId>org.projectlombok</groupId>
+	<artifactId>lombok</artifactId>
+	<version>1.16.12</version>
+</dependency>
+
+	映入json处理：
+		Jackson:
+<dependency>
+	<groupId>com.fasterxml.jackson.datatype</groupId>
+	<artifactId>jackson-datatype-guava</artifactId>
+	<version>2.5.3</version>
+</dependency>
+
+//创建json助手类
+<dependency>
+	<groupId>org.codhaus.jackson</groupId>
+	<artifactId>jackson-core-asl</artifactId>
+	<version>1.9.13</version>
+</dependency>
+
+<dependency>
+	<groupId>org.codehau.jackson</groupId>
+	<artifactId>jackson-mapper-asl</artifactId>
+	<version>1.9.13</version>
+</dependency>
+	日志处理：
+		logback:
+<dependency>
+	<groupId>ch.qos.logback</groupId>
+	<artifcatId>logback-core</artifactId>
+	<version>1.1.8</version>
+</dependency>
+<dependency>
+	<groupId>ch.qos.logback</groupId>
+	<artifcatId>logback-classic</artifactId>
+	<version>1.1.8</version>
+</dependency>
+<dependency>
+	<groupId>org.slf4j</groupId>
+	<artifcatId>slf4j-api</artifactId>
+	<version>1.7.22</version>
+</dependency>

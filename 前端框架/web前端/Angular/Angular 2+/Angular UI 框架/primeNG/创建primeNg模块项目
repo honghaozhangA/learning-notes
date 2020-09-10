@@ -1,0 +1,19 @@
+创建primeNG模块项目
+
+1.使用angular cli手脚架
+2.npm安装primeNG模块 / npm install primeng --save 即可；
+
+	npm install @angular/animations --save
+
+	"dependencies": {
+	  //...
+	  "primeng": "^4.1.0",
+	  "font-awesome": "^4.7.0"
+	}
+
+	"styles": [
+	  "../node_modules/font-awesome/css/font-awesome.min.css",
+	  "../node_modules/primeng/resources/themes/omega/theme.css",
+	  "../node_modules/primeng/resources/primeng.min.css",
+	  //...
+	],

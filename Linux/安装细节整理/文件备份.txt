@@ -1,0 +1,1 @@
+CentOS上使用rsync做文件增量备份，使用crontab做定时任务调度。

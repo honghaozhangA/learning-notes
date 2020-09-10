@@ -1,0 +1,14 @@
+Chocolatey 快速搭建系统环境
+
+	1. 安装JAVA jdk
+		choco install jdk8/jdk7/jdk6 -y
+		自动配置JAVA_HOME 默认路径是 C:\Program Files\Java\jdk1.8.0_162
+		配置环境变量 path 中添加 %JAVA_HOME%\bin%JAVA_HOME%\jre\bin
+		同时在系统变量中添加 变量 CLASSPATH = .;%JAVA_HOME%\lib;%JAVA_HOME%\lib\tools.jar
+
+		运行命令： java -version; javac -version
+
+	2. 安装NodeJS
+		choco install nodejs -y 
+		默认安装路径是 ： C:\Program Files\nodejs
+		其他配置请参考：NodeJS目录

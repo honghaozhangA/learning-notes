@@ -1,0 +1,84 @@
+Android OkHttp 加载网络图片
+
+ Android系统提供两种HTTP通信类,HttpURLConnection(原始,需要程序员大量的封装)和HttpClient(Apache组织提供,冗余代码比较多)。
+
+  尽管Google在大部分安卓版本中推荐使用HttpURLConnection,但是这个类相比httpClient功能太少,需要手头封装.(可是Android在api23中删除HttpClient的相关类,谷歌推荐使用OKhttp)。
+
+  OKhttp是一个相对成熟的解决方案,Android API19 4.4的源码中可以看到HttpURLConnection已经替换成了okHttp。并且OKhttp支持HTTP/2协议，允许连接到同一个主机地址的所有请求共享Socket,提高请求效率。在HTTP/2协议不可用的情况下，通过连接池减少请求的延迟。GZip透明压缩减少传输的数据包大小。响应缓存，避免同一个重复的网络请求。
+
+OKhttp的优势：
+    1.  允许连接到同一个主机地址的所有请求,提高请求效率。
+    2. 共享Socket,减少对服务器的请求次数。
+    3. 通过连接池,减少了请求延迟。
+    4. 缓存响应数据来减少重复的网络请求。
+    5. 减少了对数据流量的消耗。
+    6. 自动处理GZip压缩 。
+
+OKhttp的功能：
+    1. get,post请求
+    2.文件的上传下载
+    3. 加载图片(内部会图片大小自动压缩)
+    4.支持请求回调，直接返回对象、对象集合
+    5.支持session的保持
+使用OKhttp只需要做到五个步骤即可，下面通过一个Demo来看看OKhttp的强大之处(最下面有完整代码和详细注释)：
+
+一、关联OKhttp框架,添加网络权限 。
+
+	1.关联OKhttp框架（Studio中快捷键是Ctrl+Shift+Alt+s，在库中搜索OKhttp并添加）
+	2.打开Studio中的清单文件，并添加网络权限。
+		<uses-permission android:name="android.permission.INTERNET"/>
+
+二、创建OkHttpClient对象及Request设置参数。
+	OkHttpClient okHttpClient = new OkHttpClient();  
+	Request request = new Request.Builder()  
+                        .url(Path)  
+                        .build();  
+
+三、创建Call对象,调用enqueue方法,开启异步请求(代码和下一步写到一起) 。
+四、创建Handler,完成对下载的字符串进行UI更新。
+	private ImageView imgShow;  
+  
+    private String Path = "http://g.hiphotos.baidu.com/zhidao/pic/item/1e30e924b899a901da2aece318950a7b0308f5cc.jpg";  
+    private static final int SUCCESS = 1;  
+    private static final int FALL = 2;
+    
+	Handler handler = new Handler(){  
+        @Override  
+        public void handleMessage(Message msg) {  
+            switch (msg.what){  
+                //加载网络成功进行UI的更新,处理得到的图片资源  
+                case SUCCESS:  
+                    //通过message，拿到字节数组  
+                    byte[] Picture = (byte[]) msg.obj;  
+                    //使用BitmapFactory工厂，把字节数组转化为bitmap  
+                    Bitmap bitmap = BitmapFactory.decodeByteArray(Picture, 0, Picture.length);  
+                    //通过imageview，设置图片  
+                    imgShow.setImageBitmap(bitmap);  
+  
+                    break;  
+                //当加载网络失败执行的逻辑代码  
+                case FALL:  
+                    Toast.makeText(MainActivity.this, "网络出现了问题", Toast.LENGTH_SHORT).show();  
+                    break;  
+            }  
+        }  
+    };  
+
+	Call call = okHttpClient.newCall(request);  
+	     call.enqueue(new Callback() {  
+	     @Override  
+	     public void onFailure(Call call, IOException e) {  
+	  
+	     }  
+	  
+	     @Override  
+	     public void onResponse(Call call, Response response) throws IOException {  
+	     //得到从网上获取资源，转换成我们想要的类型  
+	     byte[] Picture_bt = response.body().bytes();  
+	     //通过handler更新UI  
+	     Message message = handler.obtainMessage();  
+	     message.obj = Picture_bt;  
+	     message.what = SUCCESS;  
+	     handler.sendMessage(message);  
+	     }  
+	});  

@@ -1,0 +1,52 @@
+setsebool 常用命令
+
+# setsebool -P allow_ftpd_anon_write=1   #允许ftpd匿名用户可写
+
+# setsebool -P ftp_home_dir 1   #允许用户访问自己的根目录
+
+# setsebool -P ftpd_is_daemon 1    #允许daemon运行ftpd
+
+# setsebool -P ftpd_disable_trans 1    #关闭SELINUX对ftpd的保护
+
+# setsebool -P allow_httpd_anon_write=1  #允许httpd匿名用户可写
+
+# setsebool -P allow_httpd_sys__anon_write=1   #同上
+
+# setsebool -P httpd_enable_cgi 1      #httpd被设置允许cgi被执行
+
+# setsebool -P httpd_enable_homedirs 1    #允许访问用户的根目录
+
+# setsebool -P httpd_tty_comm 1   #允许httpd控制终端
+
+# setsebool -P httpd_unified 0    #httpd之间相互独立
+
+# setsebool -P httpd_builtin_ing 0    #同httpd环境一样运行
+
+# setsebool -P httpd_can_network_connect 1   #httpd可以连接到网络
+
+# setsebool -P httpd_suexec_disable_trans 1   #禁用suexec过度
+
+# setsebool -P httpd_disable_trans 1    #允许daemon用户启动httpd
+
+
+# setsebool -P named_write_master_zones 1    #允许修改dns的主zone文件
+
+# setsebool -P named_disable_trans 1    #允许daemon启动named
+
+# setsebool -P nfs_export_all_ro 1      #nfs只读
+
+# setsebool -P nfs_export_all_rw 1      #nfs可读写
+
+# setsebool -P use_nfs_home_dirs 1      #允许本机访问远程nfs的根目录
+
+# setsebool -P allow_smbd_anon_write=1   #samba允许匿名用户可写
+
+# setsebool -P samba_enable_home_dirs 1   #允许根目录访问
+
+# setsebool -P use_samba_home_dirs 1    #允许本机访问远程samba根目录
+
+# setsebool -P smbd_disable_trans 1    #允许daemon启动samba
+
+# setsebool -P allow_rsync_anon_write=1    #允许匿名用户可写
+
+# setsebool -P rsync_disable_trans 1    #允许daemon启动rsync

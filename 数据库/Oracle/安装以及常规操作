@@ -1,0 +1,7 @@
+安装以及常规操作
+
+1.用户登录 sqlplus / as sysdba;
+2.用户解锁 alter user 用户名 account unlock;
+3.用户修改密码 alter user 用户名 identified by 密码;
+4.创建用户 create user 用户名 identified by 密码;
+5.给用户授权 grant connect,resource,dba to user; /** @connect*连接权限、@resource*创建表等基本权限、@dba*数据库管理者

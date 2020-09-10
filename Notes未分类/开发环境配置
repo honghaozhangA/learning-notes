@@ -1,0 +1,36 @@
+----------------------------- ✄ -----------------------
+相关环境变量配置：
+  JDK (Java Development Kit):
+    ☐ @critical 第一步： 下载JDK安装包 .exe 或 压缩包
+    ☐ @critical 第二步： 配置环境变量
+              ☐ 1). 新建一个系统环境变量，变量名为JAVA_HOME，变量值为JDK的安装路径
+              ☐ 2).系统变量列表中，双击Path变量，并将;%JAVA_HOME%\bin; %JAVA_HOME%\jre\bin追加到变量值后面（注意，在变量的最末尾添加时，要记得加上分号）
+              ☐ 3).新建CLASSPATH变量，变量值填写 .;%JAVA_HOME%\lib;%JAVA_HOME%\lib\tools.jar(注意最前面有一点)。
+    ☐ @today 第三步： 检查是否配置成功 @tag cmd输入java-version(java和-version之间有空格)  是否显示版本号 显示则配置成功
+  --- ✄ -----------------------
+  Android SDK（Software Development Kit）:
+    ☐ @critical 第一步： 下载Android SDK Tools 谷歌官方网址：http://developer.android.com/sdk/index.html  或者 http://www.android-studio.org/
+    ☐ @critical 第二步： 双击“SDK Manager.exe”，启动 SDK Manager @tag
+      Tools文件夹里面的Android SDK:
+        Tools（这个我们在之前的一步已经下载好了的，一般不会让你再安装了，不过有可能会让你更新），然后就是Android SDK Platform-tools和Android SDKBuild-tools，注意只需要下载最新的版本就行了。
+      API的选择了:
+        我们可以看到这里提供了很多很多从Android 2.2到Android 5.x的很多版本的API，那么怎么选择呢。这里我建议，新手的话，选择一个最新的版本就好了，因为Android是向下兼容的。其他的以后你要用到了在下载就行了（因为下载安装的速度实在太慢啦。。。）。所以如上图所示，这里我只选择了下载当前最新的Android 5.1.1(API 22)。这里需要说明的是，如果你以后不打算用模拟器调试，而是一直用真机来调试的话，那么就可以不用装“system images“了。不过新手的话，不知道怎么选择，还是建议直接全部勾上吧,
+      extras文件夹中的东西了:
+        理论上来说，extras中的东西如果网速允许，时间充沛的话，就都下载了吧，应为都是好东西。不过一开始安装的话，
+        可以只用安装上图中的三个，即Android Support Repository、Android SupportLibrary和Google USB                       Driver。其他的以后有时间再慢慢下载吧。接下来就可以进行安装了。要注意，由于这些东西都是在google 的服务器上下载的。由于俺们天朝有墙，所以可能会出现连接不上的情况
+    ☐ @today 提示 @tag
+              我们可以通过有Android SDK的国内镜像服务器来下载安装，这里推荐几个:
+                  1、中科院开源协会镜像站地址:
+                    IPV4/IPV6 : http://mirrors.opencas.ac.cn 端口：80
+                  2、北京化工大学镜像服务器地址:
+                    IPv4: http://ubuntu.buct.edu.cn/  端口：80
+                    IPv4: http://ubuntu.buct.cn/  端口：80
+                    IPv6: http://ubuntu.buct6.edu.cn/  端口：80
+                  3、大连东软信息学院镜像服务器地址:
+                    http://mirrors.neusoft.edu.cn  端口：80
+              随便选择一个就行啦。这里我选择的是第三个站点，即大连东软的镜像，使用方法如下:
+                    首先，点击菜单中的“Tools”,然后选择下拉中的“Options…”，
+                    然后在弹出的对话框中，填写HTTP Proxy Server为mirrors.neusoft.edu.cn（镜像服务器的地址，注意前面不要加http），然后填写HTTP Proxy Port为80 （端口号）。最后在勾选下面的『Forcehttps://... sources to be fetched using http://...』复选框接着点击close，关闭对话框，再重新启动SDK Manager就行啦。
+                    经过漫长的下载安装过程后
+    ☐ @critical 若是都没有显示加载数据 建议更改DNS 140.207.198.6/114.114.114.114
+------------------------------

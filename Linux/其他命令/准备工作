@@ -1,0 +1,15 @@
+准备工作
+
+1.配置好网络： 原始查看 ip addr / ip a
+2.使用ifconfig: yum install -y nat-tools
+3.使用wget: yum install -y wget
+4.替换默认源(163)：
+	http://mirrors.163.com/.help/centos.html
+	1.源文件备份 ：mv /etc/yum.repos.d/CentOS-Base.repo /etc/yum.repos.d/CentOS-Base.repo.backup
+	2.再下载Centos，并且将其改成默认源文件：
+		wget http://mirrors.163.com/.help/CentOS7-Base-163.repo
+		mv CentOS7-Base-163.repo /etc/yum.repos.d/CentOS-Base.repo
+	3.运行命令生成缓存
+		yum clean all
+		yum makecache
+5.安装vim: yum install -y vim

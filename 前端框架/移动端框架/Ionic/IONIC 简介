@@ -1,0 +1,93 @@
+IONIC 简介
+
+
+关联技术
+	前端基本知识（HTML5、JavaScript、CSS）
+	TypeScript
+	Angular
+
+什么是 ionic？他和 Cordova、Angular2 有什么联系？
+
+	ionic = Cordova + Angular + ionic CSS 
+	Cordova 提供了使用 JavaScript 调用 Native 功能，ionic CSS 是一套 UI 框架，ionic 对 Angular 进行了封装。
+
+	ionic3
+
+	ionic 基于 AngularJS 开发。由于 AngularJS1.x 版本在性能上已经很难有较大提升，Google 推出了全新设计的 Angular 2，ionic 也对应着出了2。
+
+	ionic2 与一代相比有较大的变化，基于最新的 Angular 2 ，使用 TypeScript 进行开发，如果您没有接触过 AngularJS 或 Ionic1.x，完全不用担心，直接从 ionic2 开始学习即可。
+
+	ionic3 是 Angular4.0 推出之后的跟进版本，变化幅度不大。
+
+
+// 安装
+$ npm install -g cordova ionic
+// 安装后可以验证一下版本
+$ ionic -version
+3.5.0
+
+// 创建应用
+// cd到要创建项目的目录，输入以下内容创建ionic项目
+// ionic3Demo是项目名，tabs是模板（默认是tabs,其他还有tutorial等）
+$ ionic start ionic3Demo tabs
+
+// 在浏览器中运行项目
+$ cd ionic3Demo/
+$ ionic serve
+
+
+
+// 如果需要在手机运行，则执行以下命令
+// 添加iOS项目
+$ ionic platform add ios
+// 把src里的内容同步到ios项目中(src后面会讲到)
+$ ionic cordova build ios
+// 运行iOS项目,相当于在Xcode里面按Command+R
+$ ionic cordova emulate ios
+
+//安卓的话同理，把ios替换为android即可
+$ ionic platform add android
+$ ionic cordova build android
+$ ionic cordova emulate android
+
+src 就是以后开发写代码主要的地方。每次写完要同步到手机项目中，需要使用
+
+$ ionic cordova build ios
+$ ionic platform add android
+同步到 iOS 和 Android 平台里。
+
+Tabs 分析
+
+打开 app.component.ts 可以看到这句代码
+
+rootPage:any = TabsPage;
+这个相当于 iOS 的 rootViewController 和 Android 的 MainActivity。
+
+回忆一下我们一开始选择的 Tabs 模板，所以这里生成的是 tabs。打开 src/pages/tabs/tabs.ts，可以看到这些代码：
+
+import { Component } from '@angular/core';
+
+import { AboutPage } from '../about/about';
+import { ContactPage } from '../contact/contact';
+import { HomePage } from '../home/home';
+
+@Component({
+  templateUrl: 'tabs.html'
+})
+export class TabsPage {
+
+  tab1Root = HomePage;
+  tab2Root = AboutPage;
+  tab3Root = ContactPage;
+
+  constructor() {
+
+  }
+}
+这个 TabsPage，就代表了应用最下面的三个 TabBar。上面分别指出了他们的路径。
+
+Ionic 3 的导航和 iOS 一样是一个栈，push 到新界面，pop 回旧界面。我们在构造函数中设置了 this.navCtrl 属性，我们可以调用 this.navCtrl.push() 方法，来导航到一个新的页面。
+
+输入ionic cordova platform add android/ios，这是添加一个Android平台的命令。如果是ios就是将Android那里替换为ios，成功后如下图。PS：ios需要安装XCode，也就是需要在MAC OSX系统上。
+
+输入ionic cordova build android/ios --prod生成一个Debug包。 

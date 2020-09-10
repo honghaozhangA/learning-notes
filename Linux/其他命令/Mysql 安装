@@ -1,0 +1,64 @@
+Mysql 安装
+1.检查是否已经安装过mysql, 若是已安装先停掉进程并卸载；
+	netstat -antp
+		******              **/mysqld
+	pkill -9 mysqld
+	rpm -qa|grep -i mysql
+		mysql-community-****
+	yum -y remove mysql-communtity-**** (依次卸载)
+	若是有卸载不掉的则使用： rpm -ev
+
+
+2.去官网下载yum https://dev.mysql.com/downloads/repo/yum/
+3.复制对应的rpm 地址 如：https://dev.mysql.com/get/mysql80-community-release-el7-1.noarch.rpm
+	wget https://dev.mysql.com/get/mysql80-community-release-el7-1.noarch.rpm 下载rpm
+4.完成rpm下载,执行rpm安装命令： rpm -ivh your-package.rpm 
+	your-package.rpm是你要安装的rpm包的文件名，一般置于当前目录下
+5.开始安装mysql服务：yum -y install mysql-server 
+  不过安装完成后，密码为随机密码，需要重置密码。
+	tips: （也可以指定安装目录     yum --installroot=/usr/local/mysql --releasever=/ -y install mysql-server  ）我没试，这样装环境变量配置都不用你管，装上直接启动就行。安装路径是默认的。
+
+默认配置文件路径： 
+	配置文件：/etc/my.cnf 
+	日志文件：/var/log/var/log/mysqld.log 
+	服务启动脚本：/usr/lib/systemd/system/mysqld.service socket
+	文件：/var/run/mysqld/mysqld.pid
+
+设置开启自启： systemctl enable mysqld
+
+重置密码：
+	1.先启动服务： service mysqld start/restart
+	2.查找随机密码： grep "password" /var/log/mysqld.log
+	3.输入 mysql -u root -p   密码 进入      第一次登陆 ，需要重置密码 要不什么也不能操作
+	4.修改密码： alter user 'root'@'localhost' identified by 'xxx';  （第一次使用mysql时）
+
+	5.更改加密方式：ALTER USER 'root'@'localhost' IDENTIFIED BY 'password' PASSWORD EXPIRE NEVER;
+	6.更改密码：  ALTER USER 'root'@'localhost' IDENTIFIED WITH mysql_native_password BY '新密码';
+	7.刷新： flush privileges;
+
+	tips: MySQL8.+ 版本密码修改策略问题
+		8之前 validate_password_     8之后validate_password.
+		1.修改密码策略:
+			1.密码验证策略低要求:
+				set global validate_password.policy=0;(0或LOW代表低级)
+			2.密码至少要包含的小写字母个数和大写字母个数:
+				set global validate_password.mixed_case_count=0;
+			3.密码至少要包含的特殊字符数:
+				set global validate_password.special_char_count=0; 
+			4.密码长度:
+				set global validate_password.length=6; 
+
+远程访问和开启防火墙： 
+	Mysql默认不允许远程登录，所以需要开启远程访问权限；
+
+	1.使用mysql 数据库： use mysql;
+	2.可以先查看user表
+　　　　　select user,authentication_string,host from user;
+		 默认都是localhost
+ 	3.允许所有ip 地址访问：update user set host = '%' where user = 'root';
+ 	4.刷新： FLUSH PRIVILEGES; 
+
+ 	防火墙设置：
+ 	firewall-cmd --zone=public --add-port=3306/tcp --permanent
+ 	firewall-cmd --reload
+

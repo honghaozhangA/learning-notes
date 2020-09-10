@@ -1,0 +1,39 @@
+Sublime text 3 SVN插件及使用方法
+
+前提是你电脑里已装有SVN,这时只是设置快捷调用SVN.
+
+1、ctrl+shift+P 调出控制台  然后输入 install package  /  输入install 选择  install package
+
+2、输入 svn 选择  TortoiseSVN   选择确定安装。
+
+3、等待安装  （左下角有进度表示）。----->安装成功  插件包里会有svn插件  存在
+
+4、安装完成后 会有 提示首页 上面会有 配置 demo
+
+5、按照提示操作
+
+ 如果你的TortoiseSVN安装时 不是 默认安装地址，需要配置 安装路径
+
+a、"Preferences->Package Settings->TortoiseSVN->Settings - User"  （首选项-->配置-->TortoiseSVN-->Settings - User）
+
+修改默认路径。
+
+{
+// Auto close update dialog when no errors, conflicts and merges
+"autoCloseUpdateDialog": false,
+// Auto close commit dialog when no errors, conflicts and merges
+"autoCloseCommitDialog": true,
+"tortoiseproc_path": "D:\\TortoiseSVN\\bin\\TortoiseProc.exe"   //你自己的路径
+}
+
+默认快捷键
+
+[
+{ "keys": ["alt+u"], "command": "svn_update" }
+,{ "keys": ["alt+c"], "command": "svn_commit" }
+,{ "keys": ["alt+r"], "command": "svn_revert" }
+
+
+// ,{ "keys": ["alt+l"], "command": "svn_log" }
+// ,{ "keys": ["alt+d"], "command": "svn_diff" }
+]

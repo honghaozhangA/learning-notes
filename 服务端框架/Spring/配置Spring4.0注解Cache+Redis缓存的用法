@@ -1,0 +1,87 @@
+配置Spring4.0注解Cache+Redis缓存的用法
+
+1. redis 和 ehcache的区别：
+	简单了解了下，个人觉得 从部署上而言，redis更适合分布式部署，ehcache是在每台应用服务器上开辟一块内存做缓存，集群时还得考虑缓存的情况， redis就不需要考虑缓存了、单独部署在一台服务器中（也可以是在某一台应用服务器中）
+
+2. 项目配置（spring mvc+maven+mybaits+redis）,这里只讲Spring 集成 redis：
+
+	a. 配置 pom.xml 文件  （若不是maven管理项目，下载2个jar 即可 ）
+		<!-- redis cache related.....start --> 
+		    <dependency> 
+		      <groupId>org.springframework.data</groupId> 
+		      <artifactId>spring-data-redis</artifactId> 
+		      <version>1.6.0.RELEASE</version> 
+		    </dependency> 
+		    <dependency> 
+		      <groupId>redis.clients</groupId> 
+		      <artifactId>jedis</artifactId> 
+		      <version>2.7.3</version> 
+		    </dependency> 
+	    <!-- redis cache related.....end --> 
+    b.配置 applicationContext.xml文件
+	先在<beans>中加入 cache缓存
+	xmlns:cache="http://www.springframework.org/schema/cache" 
+	 
+	xsi:schemaLocation="http://www.springframework.org/schema/cache http://www.springframework.org/schema/cache/spring-cache-4.2.xsd" 
+	在Spring加载redis配置
+		<!-- ******************** redis缓存  **********************--> 
+		<!-- 注解一定要配置，不然不起作用 --> 
+		<cache:annotation-driven /> 
+		 
+		 
+		<!-- jedis 配置 --> 
+		  <bean id="poolConfig" class="redis.clients.jedis.JedisPoolConfig"> 
+		    <property name="maxIdle" value="${redis.maxIdle}" /> 
+		    <!--<property name="maxWaitMillis" value="${redis.maxWait}" />--> 
+		    <property name="testOnBorrow" value="${redis.testOnBorrow}" /> 
+		  </bean> 
+		 
+		  <!-- redis服务器中心 --> 
+		  <bean id="connectionFactory" 
+		    class="org.springframework.data.redis.connection.jedis.JedisConnectionFactory"> 
+		    <property name="poolConfig" ref="poolConfig" /> 
+		    <property name="port" value="${redis.port}" /> 
+		    <property name="hostName" value="${redis.hostname}" /> 
+		    <!-- <property name="password" value="${redis.password}" /> --> 
+		    <property name="timeout" value="${redis.timeout}"></property> 
+		  </bean> 
+		   
+		  <bean id="redisTemplate" class="org.springframework.data.redis.core.RedisTemplate"> 
+		    <property name="connectionFactory" ref="connectionFactory" /> 
+		    <property name="keySerializer"> 
+		      <bean 
+		        class="org.springframework.data.redis.serializer.StringRedisSerializer" /> 
+		    </property> 
+		    <property name="valueSerializer"> 
+		      <bean 
+		        class="org.springframework.data.redis.serializer.JdkSerializationRedisSerializer" /> 
+		    </property> 
+		  </bean> 
+		  <!-- 配置缓存 --> 
+		  <bean id="cacheManager" class="org.springframework.data.redis.cache.RedisCacheManager"> 
+		    <constructor-arg ref="redisTemplate" /> 
+		  </bean> 
+		   
+		<!-- ******************** redis缓存  **********************--> 
+	3. 测试  
+	@Service("testService") 
+	public class TestServiceImpl implements ITestService { 
+	   
+	  @Resource 
+	  private ITestDao testDao; 
+	 
+	  @Cacheable(value="testId",key="'id_'+#id") 
+	  public Test getTestById(int id) { 
+	    return this.testDao.getObjById(id); 
+	  } 
+	   
+	  @CacheEvict(value="testId",key="'id_'+#id") 
+	  public void removeTestById(int id) { 
+	     
+	  } 
+	} 
+
+结果:
+第一次 进入Service方法
+第二次 不进入service方法 也得到了值
+注： 有朋友会问，启动访问时保错， 那是因为本地未启动redis服务， 下载win32/win64版的，启动 再访问就不会报错

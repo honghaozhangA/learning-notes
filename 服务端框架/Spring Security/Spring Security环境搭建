@@ -1,0 +1,21 @@
+Spring Security环境搭建
+
+基于spring框架
+
+安全拦截器：认证管理器、访问决策管理器、运行身份管理
+	Basic、Digest、X.509、LDAP、Form
+
+Spring Security 常用的十一个权限拦截器：
+	SecurityContextPersistenceFilter:
+	LogoutFilter:
+	AbstraceAuthenticationProcessingFilter:
+	DefaultLoginPageGeneratingFilter:
+	BasicAuthenticationFilter:
+	SecurityContextHolderAwareRequestFilter:
+	RememberMeAuthenticationFilter:
+	AnonymousAuthenticationFilter:
+	ExceptionTranslationFilter:
+	SessionManagermentFilter:
+	FilterSecurityInterceptor:
+
+	FiterChainProxy:

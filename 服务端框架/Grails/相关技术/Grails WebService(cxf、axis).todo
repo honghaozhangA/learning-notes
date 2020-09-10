@@ -1,0 +1,5 @@
+---- ✄ -----------------------cxf 插件使用
+ ☐ 运行命令：grails install-plugin cxf
+ ☐ 编写一个webservice的方法，创建一个Service普通类：
+     ☐ 使用webservice的插件名称 static expose = ["cxf"] 也可以使用注解 @GrailsCxfEndpoint
+     ☐ service 不用expose methods static exclude = ["",...]，也可以使用注解标记那些方法暴露在外部 @WebMethod @WebResult(有返回值是加入此注解)

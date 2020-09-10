@@ -1,0 +1,64 @@
+服务相关的命令
+
+1.设置开机自启的服务
+	systemctl enable xxxx
+
+2.启动服务
+	systemctl start xxxx/ service xxxx start
+
+3.关闭服务
+	systemctl stop xxxx/ service xxxx stop
+
+4.重启服务
+	systemctl restart xxxx/ service xxxx restart
+
+5.重载服务
+	systemctl reload xxxx/ service xxxx reload
+
+6.systemctl是CentOS7的服务管理工具中主要的工具，它融合之前service和chkconfig的功能于一体:
+	启动一个服务：systemctl start firewalld.service
+	关闭一个服务：systemctl stop firewalld.service
+	重启一个服务：systemctl restart firewalld.service
+	显示一个服务的状态：systemctl status firewalld.service
+	在开机时启用一个服务：systemctl enable firewalld.service
+	在开机时禁用一个服务：systemctl disable firewalld.service
+	查看服务是否开机启动：systemctl is-enabled firewalld.service
+	查看已启动的服务列表：systemctl list-unit-files|grep enabled
+	查看启动失败的服务列表：systemctl --failed
+	查看服务运行状态： ps -ef | grep 程序名
+
+
+Tips:
+	添加开机自启脚本
+
+	在centos7中增加脚本有两种常用的方法，以脚本autostart.sh为例：
+	#!/bin/bash
+	#description:开机自启脚本
+	/usr/local/tomcat/bin/startup.sh  #启动tomcat
+
+	方法一
+
+	1、赋予脚本可执行权限（/opt/script/autostart.sh是你的脚本路径）
+	chmod +x /opt/script/autostart.sh
+
+	2、打开/etc/rc.d/rc/local文件，在末尾增加如下内容
+	/opt/script/autostart.sh
+
+	3、在centos7中，/etc/rc.d/rc.local的权限被降低了，所以需要执行如下命令赋予其可执行权限
+	chmod +x /etc/rc.d/rc.local
+
+	方法二
+
+	1、将脚本移动到/etc/rc.d/init.d目录下
+	mv  /opt/script/autostart.sh /etc/rc.d/init.d
+
+	2、增加脚本的可执行权限
+	chmod +x  /etc/rc.d/init.d/autostart.sh
+
+	3、添加脚本到开机自动启动项目中
+	cd /etc/rc.d/init.d
+	chkconfig --add autostart.sh
+	chkconfig autostart.sh on
+
+7. 查看进程：#ps -ef|grep tomcat
+   结束进程：#kill -9 进程号

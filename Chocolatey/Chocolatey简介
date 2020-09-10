@@ -1,0 +1,6 @@
+Chocolatey 是 windows 下一款命令行包管理软件 ，简单说这就是 Windows 的 apt-get。习惯 Linux 操作方式并非常想用它操纵 Windows 那么Chocolatey是你最好的选择， 这套包管理系统目前已经包含了近 4000 多款常用软件。
+
+使用包管理工具（Package Manager）去管理这些软件，这里说的是操作系统级别的包管理工具，也就是管理想要安装到操作系统上的软件的工具。这是相对于项目级别的包管理，比如前端项目用的 Bower ，还有管理 NodeJS 包的 npm 而言的。
+包管理工具，可以让我们用几个简单的命令去安装，升级，还有删除软件，并且它会自动给我们解决软件之间的依赖的问题。这改变了你传统Windows安装软件模式。
+Windows 用户可以使用 Chocolatey 这个包管理工具，Mac 用户可以使用 Homebrew 。
+另外需要说明的是， Chocolatey 只是把官方下载路径封装到了 Chocolatey 中，所以下载源都是其官方路径，所以下载的一定是合法的，但是如果原软件是需要 Licence 注册的话，那么 Chocolatey 下载安装好的软件还是需要你去购买注册。不过 Chocolatey 一般还是会选用免费 Licence 可用的软件。

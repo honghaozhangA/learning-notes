@@ -1,0 +1,231 @@
+Spring4.x + Hibernate4.x 配置详解
+
+通过hibernate的学习，我们知道，hibernate主要在hibernate.cfg.xml配置文件中 
+接下来我们看一下hibernate的一个配置文件
+hibernate配置文件
+hibernate.cfg.xml
+
+	<?xml version="1.0" encoding="UTF-8"?>
+	<!DOCTYPE hibernate-configuration PUBLIC
+	  "-//Hibernate/Hibernate Configuration DTD 3.0//EN"
+	  "http://hibernate.org/dtd/hibernate-configuration-3.0.dtd">
+	<hibernate-configuration>
+	  <session-factory>
+	    <!-- 指定连接数据库所用的驱动 -->
+	    <property name="connection.driver_class">com.mysql.jdbc.Driver</property>
+	    <!-- 指定连接数据库的url，其中hibernate是本应用连接的数据库名 -->
+	    <property name="connection.url">jdbc:mysql://localhost/hibernate_test</property>
+	    <!-- 指定连接数据库的用户名 -->
+	    <property name="connection.username">root</property>
+	    <!-- 指定连接数据库的密码 -->
+	    <property name="connection.password">cheng</property>
+	    <!-- 指定连接池里最大连接数 -->
+	    <property name="hibernate.c3p0.max_size">20</property>
+	    <!-- 指定连接池里最小连接数 -->
+	    <property name="hibernate.c3p0.min_size">1</property>
+	    <!-- 指定连接池里连接的超时时长 -->
+	    <property name="hibernate.c3p0.timeout">5000</property>
+	    <!-- 指定连接池里最大缓存多少个Statement对象 -->
+	    <property name="hibernate.c3p0.max_statements">100</property>
+	    <property name="hibernate.c3p0.idle_test_period">3000</property>
+	    <property name="hibernate.c3p0.acquire_increment">2</property>
+	    <property name="hibernate.c3p0.validate">true</property>
+	    <!-- 指定数据库方言 -->
+	    <property name="dialect">org.hibernate.dialect.MySQL5InnoDBDialect</property>
+	    <!-- 根据需要自动创建数据表 -->
+	    <property name="hbm2ddl.auto">update</property><!--①-->
+	    <!-- 显示Hibernate持久化操作所生成的SQL -->
+	    <property name="show_sql">true</property>
+	    <!-- 将SQL脚本进行格式化后再输出 -->
+	    <property name="hibernate.format_sql">true</property>
+	    <!-- 避免这个错误信息Disabling contextual LOB creation as createClob() method threw error :java.lang.reflect.InvocationTargetException -->
+	    <property name="hibernate.temp.use_jdbc_metadata_defaults">false</property>
+	    <!-- 罗列所有持久化类的类名 -->
+	    <mapping class="com.wechat.entity.po.User"/>
+	    <mapping class="com.wechat.entity.po.Person"/>
+	  </session-factory>
+	</hibernate-configuration>
+
+配置文件的作用
+hibernate.cfg.xml文件的主要作用就是配置了一个session-factory
+	在session-factory中主要通过property配置一些数据库的连接信息，我们知道，spring通常会将这种数据库连接用dataSource来表示，这样一来，hibernate.cfg.xml文件中的所有跟数据库连接的都可以干掉了，直接用spring的dataSource，而dataSource也可以用c3p0、dbcp等。
+	在session-factory中通过property除了配置一些数据库的连接信息之外，还有一些hibernate的配置，比如方言、自动创建表机制、格式化sql等，这些信息也需要配置起来。
+	还有最关键的一个持久化类所在路径的配置
+当不采用spring整合的时候，我们使用hibernate时主要是用hibernate从sessionFactory中去的session，然后用session来操作持久化对象，而sessionFactory来自于配置文件。像下面这样：
+	StandardServiceRegistry registry = null;
+	  SessionFactory sessionFactory = null;
+	  Session session = null;
+	  Transaction transaction = null;
+	  SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+	  @Before
+	  public void init() {
+
+	    registry = new StandardServiceRegistryBuilder()
+	        .configure() // configures settings from hibernate.cfg.xml
+	        .build();
+	    sessionFactory = new MetadataSources( registry ).buildMetadata().buildSessionFactory();
+	    session = sessionFactory.openSession();
+	    //开始事务
+	    transaction = session.getTransaction();
+	    transaction.begin();
+	  }
+
+	  @Test
+	  public void testSaveUser() {
+	    User user = new User();
+	    user.setUsername("张学友");
+	    user.setPassword("jacky");
+	    user.setRegistDate(sdf.format(new Date()));
+	    File file = new File("D:"+File.separator+"ubuntu.png");
+	    String fileName = file.getName();
+	    String prefix=fileName.substring(fileName.lastIndexOf(".")+1);
+	    System.out.println(prefix);
+	    InputStream input = null;
+	    try {
+	      input = new FileInputStream(file);
+
+	    } catch (FileNotFoundException e) {
+	      e.printStackTrace();
+	    }
+
+	    Blob image = null;
+	    try {
+	      image = Hibernate.getLobCreator(session).createBlob(input,input.available());
+	    } catch (IOException e) {
+	      // TODO Auto-generated catch block
+	      e.printStackTrace();
+	    }
+	    user.setUserPic(image);
+	    session.save(user);
+	  }
+
+	  @After 
+	  public void destroy(){
+	    transaction.commit();
+	    session.close();
+	    sessionFactory.close();
+	    StandardServiceRegistryBuilder.destroy( registry );
+	  }
+
+Spring对hibernate的整合就是将上述三点通过spring配置起来，而hibernate最关键的sessionFactroy就是spring的一个bean
+这些理解了整合就简单了，
+SessionFactoryBean
+spring的sessionFactroy像下面这样配置：
+
+	<!-- 加载配置文件 -->
+	  <context:property-placeholder location="classpath:jdbc.properties"
+	    file-encoding="utf-8" ignore-unresolvable="true" />
+
+	  <bean id="sessionFactory"
+	    class="org.springframework.orm.hibernate5.LocalSessionFactoryBean">
+	    <property name="dataSource" ref="dataSource" />
+	    <property name="packagesToScan">
+	      <list>
+	        <!-- 可以加多个包 -->
+	        <value>com.wechat.entity.po</value>
+	      </list>
+	    </property>
+	    <property name="hibernateProperties">
+	      <props>
+	        <prop key="hibernate.hbm2ddl.auto">${hibernate.hbm2ddl.auto}</prop>
+	        <prop key="hibernate.dialect">${hibernate.dialect}</prop>
+	        <prop key="hibernate.show_sql">${hibernate.show_sql}</prop>
+	        <prop key="hibernate.format_sql">${hibernate.format_sql}</prop>
+	        <prop key="hibernate.temp.use_jdbc_metadata_defaults">false</prop>
+	      </props>
+	    </property>
+	  </bean>
+
+通过bean的配置可以看出该bean就是hibernate的sessionFactroy 
+因为它指向了org.springframework.orm.hibernate5.LocalSessionFactoryBean
+在这个bean中主要配置了上面说的三点：
+数据源dataSource
+hibernate的配置，包括方言，输出sql等
+持久化类的位置，通过包进行扫描
+下面给出数据源dataSource的配置
+dataSource
+	<!-- 配置数据源 -->
+	  <bean id="dataSource" class="com.mchange.v2.c3p0.ComboPooledDataSource"
+	    destroy-method="close" p:driverClass="${jdbc.driverClassName}"
+	    p:jdbcUrl="${jdbc.url}" p:user="${jdbc.username}" p:password="${jdbc.password}"
+	    p:testConnectionOnCheckout="${jdbc.c3p0.testConnectionOnCheckout}"
+	    p:testConnectionOnCheckin="${jdbc.c3p0.testConnectionOnCheckin}"
+	    p:idleConnectionTestPeriod="${jdbc.c3p0.idleConnectionTestPeriod}"
+	    p:initialPoolSize="${jdbc.c3p0.initialPoolSize}" p:minPoolSize="${jdbc.c3p0.minPoolSize}"
+	    p:maxPoolSize="${jdbc.c3p0.maxPoolSize}" p:maxIdleTime="${jdbc.c3p0.maxIdleTime}" />
+还有数据库的连接信息
+	jdbc.properties
+	#-----------------------------------------------------
+	# 数据库配置
+	#-----------------------------------------------------
+	#服务器地址
+	host=127.0.0.1
+	jdbc.driverClassName=com.mysql.jdbc.Driver
+	jdbc.url=jdbc:mysql://${host}:3306/hibernate_test
+	jdbc.username=root
+	jdbc.password=cheng
+
+	#-----------------------------------------------------
+	# 适用于c3p0的配置
+	#-----------------------------------------------------
+	#-----------------------------------------------------
+	# c3p0反空闲设置，防止8小时失效问题28800
+	#-----------------------------------------------------
+	#idleConnectionTestPeriod要小于MySQL的wait_timeout
+	jdbc.c3p0.testConnectionOnCheckout=false
+	jdbc.c3p0.testConnectionOnCheckin=true
+	jdbc.c3p0.idleConnectionTestPeriod=3600
+	#-----------------------------------------------------
+	# c3p0连接池配置
+	#-----------------------------------------------------
+	#initialPoolSize, minPoolSize, maxPoolSize define the number of Connections that will be pooled.
+	#Please ensure that minPoolSize <= maxPoolSize.
+	#Unreasonable values of initialPoolSize will be ignored, and minPoolSize will be used instead.
+	jdbc.c3p0.initialPoolSize=10
+	jdbc.c3p0.minPoolSize=10
+	jdbc.c3p0.maxPoolSize=100
+	#maxIdleTime defines how many seconds a Connection should be permitted to go unused before being culled from the pool.
+	jdbc.c3p0.maxIdleTime=3600
+	#-----------------------------------------------------
+	# hibernate连接池配置
+	#-----------------------------------------------------
+	hibernate.connection.driverClass=com.mysql.jdbc.Driver
+	hibernate.connection.url=jdbc:mysql://${host}:3306/${dbName}
+	hibernate.dialect=org.hibernate.dialect.MySQL5Dialect
+	hibernate.show_sql=true
+	hibernate.format_sql=true
+	hibernate.hbm2ddl.auto=update
+
+配置完这些还有spring强大的事务管理
+	<!-- 配置Hibernate事务管理器 -->
+	  <bean id="transactionManager"
+	    class="org.springframework.orm.hibernate5.HibernateTransactionManager">
+	    <property name="sessionFactory" ref="sessionFactory" />
+	  </bean>
+
+	  <!-- 配置事务异常封装 -->
+	  <bean id="persistenceExceptionTranslationPostProcessor"
+	    class="org.springframework.dao.annotation.PersistenceExceptionTranslationPostProcessor" />
+
+	  <!-- 基于数据源的事务管理器 -->
+	  <!-- <bean id="transactionManager" class="org.springframework.jdbc.datasource.DataSourceTransactionManager" 
+	    p:dataSource-ref="dataSource" /> -->
+
+	  <!-- 配合<tx:advice>和<aop:advisor>完成了事务切面的定义 -->
+	  <!-- 使用强大的切点表达式是语言轻松定义目标方法 -->
+	  <aop:config proxy-target-class="true">
+	    <!-- 通过aop定义事务增强切面 -->
+	    <aop:pointcut expression=" execution(* com.wechat.service..*(..))"
+	      id="serviceMethod" />
+	    <!-- 引用事务增强 -->
+	    <aop:advisor advice-ref="txAdvice" pointcut-ref="serviceMethod" />
+	  </aop:config>
+	  <!-- 事务增强 -->
+	  <tx:advice id="txAdvice" transaction-manager="transactionManager">
+	    <!-- 事务属性定义 -->
+	    <tx:attributes>
+	      <tx:method name="*" />
+	    </tx:attributes>
+	  </tx:advice>
+
