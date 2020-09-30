@@ -1,0 +1,16 @@
+Array to List:
+    1. 遍历
+    List<String> resultList = new ArrayList<>(array.length);
+    for (String s : array) {
+        resultList.add(s);
+    }
+
+    2. Arrays.asList() //此ArrayList是Array的内部类，调用add()时，会报错：java.lang.UnsupportedOperationException
+    List<String> resultList= new ArrayList<>(Arrays.asList(array));
+
+    3. Collections.addAll()
+    List<String> resultList = new ArrayList<>(array.length);
+    Collections.addAll(resultList, array);
+
+    4. List.of() //Java9
+    List<String> resultList = List.of(array);

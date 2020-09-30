@@ -1,0 +1,144 @@
+######################################
+##  前提知识
+######################################
+
+1.Groovy注释标记和Java一样，支持//或者/**/
+
+2.Groovy语句可以不用分号结尾。Groovy为了尽量减少代码的输入，确实煞费苦心
+
+3.Groovy中支持动态类型，即定义变量的时候可以不指定其类型。
+
+4.Groovy中，变量定义可以使用关键字def。注意，虽然def不是必须的，但是为了代码清晰，
+  建议还是使用def关键字
+  def i = 1       //可以不使用分号结尾
+  def ss = "I ama person"
+  def  int x = 1  //变量定义时，也可以直接指定类型
+
+5.函数定义时，参数的类型也可以不指定。比如
+  String testFunction(arg1,arg2){ //无需指定参数类型
+    ...
+  }  
+
+6.除了变量定义可以不指定类型外，Groovy中函数的返回值也可以是无类型的。比如：
+  //无类型的函数定义，必须使用def关键字
+  def  nonReturnTypeFunc(){
+      last_line   //最后一行代码的执行结果就是本函数的返回值
+  }
+  //如果指定了函数返回类型，则可不必加def关键字来定义函数
+  String getString(){
+     return"I am a string"
+  }
+
+7.函数返回值：Groovy的函数里，可以不使用returnxxx来设置xxx为函数返回值。
+  如果不使用return语句的话，则函数里最后一句代码的执行结果被设置成返回值。比如
+  //下面这个函数的返回值是字符串"getSomething return value"
+  def getSomething(){
+       "I am a return value" //最后一行代码，返回类型为String
+  }
+  注意，如果函数定义时候指明了返回值类型的话，函数中则必须返回正确的数据类型。
+
+8.最后，除了每行代码不用加分号外，Groovy中函数调用的时候还可以不加括号。比如：
+  println("test") ---> println"test"
+  注意，虽然写代码的时候，对于函数调用可以不带括号，但是Groovy经常把属性和函数混淆。比如
+  def method(){
+    "hello"
+  }
+  method  //如果不加括号的话，Groovy会误认为method是一个变量。找不到就会报错：
+  所以调用函数最好带上括号，也好理解一些，如果这个函数是Groovy API
+  或者Gradle API中比较常用的，比如println，就可以不带括号。
+
+
+######################################
+##  Groovy中的字符串
+######################################
+
+Groovy对字符串支持相当强大，充分吸收了一些脚本语言的优点：
+1.单引号''中的内容严格对应Java中的String，不对$符号进行转义
+   defsingleQuote='I am $ dolloar'  //输出就是I am $ dolloar
+2.双引号""的内容则和脚本语言的处理有点像，如果字符中有$号的话，则它会$表达式先求值。
+   def s1 = "I am one dollar" //输出 I am one dollar
+   def x = 1
+   def s2 = "I am $x dolloar" //输出I am 1 dolloar
+3.三个引号'''xxx'''中的字符串支持随意换行 比如
+   defmultieLines = ''' begin
+     line  1
+     line  2
+     end '''
+
+
+######################################
+##  Groovy中的数据类型
+######################################
+
+1. 基本数据类型
+  int对应为Integer，boolean对应为Boolean
+
+2. 闭包
+  def aClosure = {  //闭包是一段代码，用花括号括起来..
+      String param1, int param2 ->  //这个箭头很关键。
+                          //箭头前面是参数定义，箭头后面是代码块
+      println"this is code" //这是代码块，最后一句是返回值，
+                  //也可以使用return，和Groovy中普通函数一样
+  }
+
+// Closure的定义格式是:
+  def xxx = {paramters -> code}  //或者  
+  def xxx = {无参数纯code}  // 这种case不需要->符号
+// 调用:
+  aClosure.call("this is string",100)  or
+  aClosure("this is string", 100)
+
+// 如果闭包没定义参数的话，则隐含有一个参数，这个参数名字叫it
+  def greeting = { "Hello, $it!" }
+  assert greeting('Patrick') == 'Hello, Patrick!'
+  等同于：
+  def greeting = { it -> "Hello, $it!"}
+  assert greeting('Patrick') == 'Hello, Patrick!'
+
+// 下面这种写法，则表示闭包没有参数
+  def noParamClosure = { -> true }
+
+// 当函数的最后一个参数是闭包的话，可以省略圆括号。
+
+3. List类
+  变量定义：List变量由[]定义，比如
+  def aList = [5,'string',true] //List由[]定义，其元素可以是任何对象
+  //变量存取：可以直接通过索引存取，而且不用担心索引越界。
+  //如果索引超过当前链表长度，List会自动
+  往该索引添加元素
+  assert aList[1] == 'string'
+  assert aList[5] == null //第6个元素为空
+  aList[100] = 100 //设置第101个元素的值为10
+  assert aList[100] == 100
+  那么，aList到现在为止有多少个元素呢？
+  println aList.size  ===>结果是101
+
+4. Map类
+  容器变量定义
+  变量定义：Map变量由[:]定义，比如
+      def aMap = ['key1':'value1','key2':true]
+      注意其中的冒号。冒号左边是key，右边是Value。
+  key必须是字符串，value可以是任何对象。
+      另外，key可以用''或""包起来，也可以不用引号包起来。比如
+      def aNewMap = [key1:"value",key2:true]
+      其中的key1和key2默认被处理成字符串"key1"和"key2"，
+      但最好是用""引起来，避免引起混淆。比如：
+
+      def key1="wowo"
+      def aConfusedMap=[key1:"who am i?"]
+      aConfuseMap中的key1到底是"key1"还是变量key1的值“wow”？
+      显然，答案是字符串"key1"。如果要是"wowo"的话，则aConfusedMap的定义必须设置成：
+      def aConfusedMap=[(key1):"who am i?"]
+  Map中元素的存取更加方便，它支持多种方法：
+      println aMap.keyName    <==这种表达方法好像key就是aMap的一个成员变量一样
+      println aMap['keyName'] <==这种表达方法更传统一点
+      aMap.anotherkey = "i am map"  <==为map添加新元素
+
+5. Range类
+  Range是Groovy对List的一种拓展，变量定义和大体的使用方法如下：
+    def aRange = 1..5 <==Range类型的变量 由begin值+两个点+end值表示
+                          左边这个aRange包含1,2,3,4,5这5个值
+    如果不想包含最后一个元素，则
+    def aRangeWithoutEnd = 1..<5  <==包含1,2,3,4这4个元素
+
+    .......

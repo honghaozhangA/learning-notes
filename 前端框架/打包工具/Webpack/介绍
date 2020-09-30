@@ -1,0 +1,26 @@
+打包实现的优化：
+    一、自带优化：
+        1. tree-sharking: 依赖关系解析，不用的代码不打包
+        2. scope-hosting: 作用域提升，明确参数值时，直接打包结果，不打包过程
+
+
+    二、自己实现的优化：
+        1. 动态链接库：
+            想要提取出来的包，打包到单独文件，放到cdn上，提升加载速度，缩小体积
+
+        2. 抽离公共代码：
+
+懒加载：
+    使用import()去动态加载资源：
+    button.addEventListener('click',function(){
+        console.log('click');
+        //es6草案中的语法,利用jsonp实现动态加载文件
+        //直接使用不支持，需要利用语法动态导入的插件@babel/plugin-syntax-dynamic-import
+        //vue的懒加载  react的懒加载都是这个原理，打包的时候会打包好resource.js文件，然后按需去动态加载
+        import('./resource.js').then(data => {
+            console.log(data.default);//数据是放在data的default属性里的
+        })
+    });
+
+热更新：
+    css-loader、style-loader
